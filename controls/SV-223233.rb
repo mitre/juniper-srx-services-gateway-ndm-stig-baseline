@@ -35,4 +35,17 @@ set system internet-options no-tcp-reset drop-all-tcp'
   tag legacy: ['SV-81031', 'V-66541']
   tag cci: ['CCI-002385']
   tag nist: ['SC-5 a']
+
+  describe command('show configuration system | display set | match "(no-|internet-options)"') do
+    its('stdout.strip') { should match(/^set system no-redirects/) }
+    its('stdout.strip') { should match(/^set system no-ping-record-route/) }
+    its('stdout.strip') { should match(/^set system no-ping-time-stamp/) }
+    its('stdout.strip') { should match(/^set system internet-options icmpv4-rate-limit packet-rate 50/) }
+    its('stdout.strip') { should match(/^set system internet-options icmpv6-rate-limit packet-rate 50/) }
+    its('stdout.strip') { should match(/^set system internet-options no-ipip-path-mtu-discovery/) }
+    its('stdout.strip') { should match(/^set system internet-options no-source-quench/) }
+    its('stdout.strip') { should match(/^set system internet-options tcp-drop-synfin-set/) }
+    its('stdout.strip') { should match(/^set system internet-options no-ipv6-path-mtu-discovery/) }
+    its('stdout.strip') { should match(/^set system internet-options no-tcp-reset drop-all-tcp/) }
+  end
 end

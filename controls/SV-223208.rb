@@ -31,4 +31,8 @@ Consult the Juniper knowledge base and configuration guides to determine the com
   tag legacy: ['SV-80987', 'V-66497']
   tag cci: ['CCI-000382']
   tag nist: ['CM-7 b']
+
+  describe 'The Juniper SRX Services Gateway must be configured to prohibit the use of unnecessary and/or nonsecure functions, ports, protocols, and/or services, as defined in the PPSM CAL and vulnerability assessments.' do
+    skip 'The check for this control needs to be done manually'
+  end
 end

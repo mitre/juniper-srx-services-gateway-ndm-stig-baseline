@@ -25,4 +25,9 @@ set system login retry-options tries-before-disconnect 3'
   tag legacy: ['SV-81043', 'V-66553']
   tag cci: ['CCI-000044']
   tag nist: ['AC-7 a']
+
+
+  describe command('show configuration system login | display set | match retry-options') do
+    its('stdout.strip') { should match(/^set system login retry-options tries-before-disconnect 3/) }
+  end
 end

@@ -23,4 +23,8 @@ set system services ssh no-tcp-forwarding'
   tag legacy: ['SV-80999', 'V-66509']
   tag cci: ['CCI-000382']
   tag nist: ['CM-7 b']
+
+  describe command('show configuration system services ssh | display set | match no-tcp-forwarding') do
+    its('stdout.strip') { should match(/^set system services ssh no-tcp-forwarding/) }
+  end
 end

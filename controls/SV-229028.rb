@@ -31,4 +31,9 @@ set system syslog user * daemon alert"
   tag legacy: ['V-66495', 'SV-80985']
   tag cci: ['CCI-000366', 'CCI-000372']
   tag nist: ['CM-6 b', 'CM-6 (1)']
+
+describe command('show configuration system syslog | display set | match "user \\*"') do
+  its('stdout.strip') { should match(/^set system syslog user \* any emergency/) }
+  its('stdout.strip') { should match(/^set system syslog user \* daemon critical/) }
+  its('stdout.strip') { should match(/^set system syslog user \* daemon alert/) }
 end

@@ -27,4 +27,9 @@ set system services ssh max-sessions-per-connection 1'
   tag legacy: ['SV-81039', 'V-66549']
   tag cci: ['CCI-000054']
   tag nist: ['AC-10']
+
+  describe command('show configuration system services ssh | display set | match connection-limit') do
+    its('stdout.strip') { should match(/^set system services ssh connection-limit ([0-9]|10)/) }
+  end
+  
 end

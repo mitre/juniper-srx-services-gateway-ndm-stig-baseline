@@ -25,4 +25,8 @@ set system services ssh root-login deny'
   tag legacy: ['SV-80993', 'V-66503']
   tag cci: ['CCI-000382']
   tag nist: ['CM-7 b']
+
+  describe command('show configuration system services ssh root-login | display set | match root-login') do
+    its('stdout.strip') { should match(/^set system services ssh root-login deny/) }
+  end
 end

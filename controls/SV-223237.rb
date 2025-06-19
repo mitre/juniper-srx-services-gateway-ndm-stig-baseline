@@ -25,4 +25,7 @@ delete system services web-management'
   tag legacy: ['SV-81095', 'V-66605']
   tag cci: ['CCI-000382']
   tag nist: ['CM-7 b']
+
+describe command('show configuration system services web-management | display set') do
+  its('stdout.strip') { should be_empty }
 end

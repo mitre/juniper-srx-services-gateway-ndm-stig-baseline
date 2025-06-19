@@ -31,3 +31,18 @@ inspec_version: |
 ###
 
 inputs:
+  #SV-223232
+  - name: client_alive_count_max
+    description: 'Maximum number of client-alive probes the client will tolerate before it disconnects the SSH session'
+    type: Numeric
+
+  #SV-223232
+  - name: client_alive_interval
+    description: 'Internal in seconds between client-alive probes sent to the SSH client'
+    type: Numeric
+
+  #SV-223234
+  - name: ssh_rate_limit
+    description: ''
+    type: Numeric
+    value: 4

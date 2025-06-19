@@ -25,4 +25,8 @@ set system login password minimum -numerics to 1'
   tag legacy: ['SV-81013', 'V-66523']
   tag cci: ['CCI-004066', 'CCI-000194']
   tag nist: ['IA-5 (1) (h)', 'IA-5 (1) (a)']
+
+  describe command('show configuration system login password | display set | match minimum -numerics') do
+    its('stdout.strip') { should match(/^set system login password minimum -numerics to\s+[1-9]\d*/) }
+  end
 end

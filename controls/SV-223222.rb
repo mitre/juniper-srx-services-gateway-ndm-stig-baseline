@@ -25,4 +25,8 @@ set system login password minimum-punctuations 1'
   tag legacy: ['SV-81015', 'V-66525']
   tag cci: ['CCI-004066', 'CCI-001619']
   tag nist: ['IA-5 (1) (h)', 'IA-5 (1) (a)']
+
+  describe command('show configuration system login password | display set | match minimum-punctuations') do
+    its('stdout.strip') { should match(/^set system login password minimum-punctuations\s+[1-9]\d*/) }
+  end
 end

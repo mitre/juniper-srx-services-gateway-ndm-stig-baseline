@@ -25,4 +25,8 @@ set system login password minimum-upper-cases 1'
   tag legacy: ['SV-81009', 'V-66519']
   tag cci: ['CCI-004066', 'CCI-000192']
   tag nist: ['IA-5 (1) (h)', 'IA-5 (1) (a)']
+
+  describe command('show configuration system login password | display set | match minimum-upper-cases') do
+    its('stdout.strip') { should match(/^set system login password minimum-upper-cases\s+[1-9]\d*/) }
+  end
 end

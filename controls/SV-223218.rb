@@ -25,4 +25,8 @@ set system login password change-type character-sets'
   tag legacy: ['SV-81007', 'V-66517']
   tag cci: ['CCI-004066', 'CCI-000192']
   tag nist: ['IA-5 (1) (h)', 'IA-5 (1) (a)']
+
+  describe command('show configuration system login password | display set | match character-sets') do
+    its('stdout.strip') { should match(/^set system login password change-type character-sets/) }
+  end
 end

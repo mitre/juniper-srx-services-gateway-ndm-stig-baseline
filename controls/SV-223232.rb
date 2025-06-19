@@ -26,4 +26,9 @@ set system services ssh client-alive-interval <organization-defined value>'
   tag legacy: ['SV-81029', 'V-66539']
   tag cci: ['CCI-001133']
   tag nist: ['SC-10']
+
+  describe command('show configuration system services ssh | display set | match client-alive') do
+    its('stdout.strip') { should match(/^set system services ssh client-alive-count-max #{input('client_alive_count_max').to_s}/) }
+    its('stdout.strip') { should match(/^set system services ssh client-alive-interval #{input('client_alive_interval').to_s}/) }
+  end
 end

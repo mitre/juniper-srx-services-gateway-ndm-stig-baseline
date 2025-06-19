@@ -27,4 +27,10 @@ set system services ssh macs hmac-sha2-256'
   tag legacy: ['SV-81019', 'V-66529']
   tag cci: ['CCI-002890']
   tag nist: ['MA-4 (6)']
+
+  describe command('show configuration system services ssh | display set | match hmac-sha') do
+    its('stdout.strip') { should match(/^set system services ssh protocol-version v2/) }
+    its('stdout.strip') { should match(/^set system services ssh macs hmac-sha2-512/) }
+    its('stdout.strip') { should match(/^set system services ssh macs hmac-sha2-256/) }
+  end
 end

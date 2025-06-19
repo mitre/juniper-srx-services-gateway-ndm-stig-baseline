@@ -36,4 +36,17 @@ set system syslog console any any'
   tag legacy: ['SV-80971', 'V-66481']
   tag cci: ['CCI-000366', 'CCI-000015', 'CCI-001686']
   tag nist: ['CM-6 b', 'AC-2 (1)', 'AC-2 (4)']
+
+describe command('show configuration system syslog | display set | match "(messages|User-Auth|interactive-commands|processes|account-actions|console)"') do
+  its('stdout.strip') { should match(/^set system syslog file messages any info/) }
+  its('stdout.strip') { should match(/^set system syslog file messages authorization none/) }
+  its('stdout.strip') { should match(/^set system syslog file messages interactive-commands none/) }
+  its('stdout.strip') { should match(/^set system syslog file messages daemon none/) }
+  its('stdout.strip') { should match(/^set system syslog file User-Auth authorization any/) }
+  its('stdout.strip') { should match(/^set system syslog file interactive-commands interactive-commands any/) }
+  its('stdout.strip') { should match(/^set system syslog file processes daemon any/) }
+  its('stdout.strip') { should match(/^set system syslog file account-actions change-log any any/) }
+  its('stdout.strip') { should match(/^set system syslog file account-actions match "system login user"/) }
+  its('stdout.strip') { should match(/^set system syslog console any any/) }
 end
+

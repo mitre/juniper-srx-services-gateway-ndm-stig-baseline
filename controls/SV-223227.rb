@@ -35,4 +35,16 @@ set system services ssh key-exchange ecdh-sha2-nistp256'
   tag legacy: ['SV-81021', 'V-66531']
   tag cci: ['CCI-003123']
   tag nist: ['MA-4 (6)']
+
+  describe command('show configuration system services ssh | display set | match "(protocol-version|ciphers|macs|key-exchange)"') do
+    its('stdout.strip') { should match(/^set system services ssh protocol-version v2/) }
+    its('stdout.strip') { should match(/^set system services ssh ciphers aes256-ctr/) }
+    its('stdout.strip') { should match(/^set system services ssh ciphers aes192-ctr/) }
+    its('stdout.strip') { should match(/^set system services ssh ciphers aes128-ctr/) }
+    its('stdout.strip') { should match(/^set system services ssh macs hmac-sha2-512/) }
+    its('stdout.strip') { should match(/^set system services ssh macs hmac-sha2-256/) }
+    its('stdout.strip') { should match(/^set system services ssh key-exchange ecdh-sha2-nistp521/) }
+    its('stdout.strip') { should match(/^set system services ssh key-exchange ecdh-sha2-nistp384/) }
+    its('stdout.strip') { should match(/^set system services ssh key-exchange ecdh-sha2-nistp256'/) }
+  end
 end
