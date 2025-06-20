@@ -25,4 +25,17 @@ set system syslog host <IP-syslog-server> any any'
   tag legacy: ['SV-81041', 'V-66551']
   tag cci: ['CCI-002234']
   tag nist: ['AC-6 (9)']
+  
+  describe command('show configuration system syslog | display set') do
+    let(:stdout) { subject.stdout }
+
+    it 'should log interactive-commands to a host or file' do
+      expect(stdout).to match(/set system syslog .* interactive-commands/)
+    end
+
+    it 'should not suppress interactive-commands logs' do
+      expect(stdout).not_to match(/set system syslog .* interactive-commands none/)
+    end
+  end
+
 end

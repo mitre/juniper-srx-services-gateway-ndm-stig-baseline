@@ -37,4 +37,10 @@ Note: Use \n to insert a line between paragraphs where needed.)
   tag legacy: ['SV-81045', 'V-66555']
   tag cci: ['CCI-000048']
   tag nist: ['AC-8 a']
+
+  describe command('show configuration system login | display set | match message') do
+    its('stdout') { should match(/set system login message/) }
+    its('stdout') { should match(/U\.S\. Government \(USG\) Information System/) }
+    its('stdout') { should match(/you consent to the following conditions:/i) }
+  end
 end

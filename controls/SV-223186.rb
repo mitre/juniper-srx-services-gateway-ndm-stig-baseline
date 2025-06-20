@@ -56,4 +56,45 @@ Note: There are 4 pre-defined classes which should not be uses used for <class n
   tag legacy: ['SV-80963', 'V-66473']
   tag cci: ['CCI-000213']
   tag nist: ['AC-3']
+
+  # List of the known, approved local accounts
+  documented_users = input('documented_users') 
+
+  describe command('show configuration system login | display set') do
+    let(:login_config) { subject.stdout }
+
+    # Extract all defined users
+    let(:all_users) do
+      login_config.scan(/set system login user (\S+)/).flatten.uniq
+    end
+
+    # Extract users with assigned login classes
+    let(:users_with_class) do
+      login_config.scan(/set system login user (\S+) class \S+/).flatten.uniq
+    end
+
+    # Extract users with an authentication stanza
+    let(:users_with_auth) do
+      login_config.scan(/set system login user (\S+) authentication/).flatten.uniq
+    end
+
+    # Users with idle-timeout
+    let(:users_with_idle_timeout) do
+      login_config.scan(/set system login user (\S+) idle-timeout \d+/).flatten.uniq
+    end
+
+    it 'should assign a login class to each defined user account' do
+      expect(users_with_class.sort).to eq(all_users.sort)
+    end
+
+    it 'should have only documented accounts with authentication configured' do
+      undocumented = users_with_auth - documented_users
+      expect(undocumented).to be_empty, "Undocumented accounts with authentication found: #{undocumented.join(', ')}"
+    end
+
+    it 'should assign an idle-timeout to every user' do
+      missing = all_users - users_with_idle_timeout
+      expect(missing).to be_empty, "Users missing idle-timeout: #{missing.join(', ')}"
+    end
+  end
 end

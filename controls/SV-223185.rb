@@ -26,4 +26,21 @@ set system syslog file account-actions change-log any any"
   tag legacy: ['SV-80959', 'V-66469']
   tag cci: ['CCI-002130']
   tag nist: ['AC-2 (4)']
+
+  # Check the syslog configuration for logging account enabling events
+  # This command checks the syslog configuration for logging account enabling events
+  # It ensures that the syslog is set to log change-log events with severity info or any
+  # and that it is configured to log to a valid file or remote host destination
+  describe command('show configuration system syslog | display set') do
+    let(:syslog_config) { subject.stdout }
+
+    it 'should log configuration changes, including account enablement' do
+      expect(syslog_config).to match(/set system syslog .+ change/)
+    end
+
+    it 'should log to a local file or remote destination' do
+      expect(syslog_config).to match(/set system syslog (file|host) .+ any .+/)
+    end
+  end
+
 end

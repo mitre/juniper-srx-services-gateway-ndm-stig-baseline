@@ -10,8 +10,7 @@ description: null
 version: 3.3.0
 supports: []
 depends: []
-inspec_version: |
-  "~>6.0"
+inspec_version: "~>6.0"
 
 
 ### INPUTS ###
@@ -31,17 +30,24 @@ inspec_version: |
 ###
 
 inputs:
-  #SV-223232
+  # SV-223186
+  - name: documented_users
+    description: 'List of administrator and users with access to all commands'
+    type: array
+    value: ['admin', 'aaron.lippold', 'george.dias', 'sean.cai']
+    required: true
+
+  # SV-223232
   - name: client_alive_count_max
     description: 'Maximum number of client-alive probes the client will tolerate before it disconnects the SSH session'
     type: Numeric
 
-  #SV-223232
+  # SV-223232
   - name: client_alive_interval
     description: 'Internal in seconds between client-alive probes sent to the SSH client'
     type: Numeric
 
-  #SV-223234
+  # SV-223234
   - name: ssh_rate_limit
     description: ''
     type: Numeric

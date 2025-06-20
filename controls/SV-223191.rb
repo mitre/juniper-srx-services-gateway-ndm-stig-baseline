@@ -40,4 +40,24 @@ set system syslog console any any'
   tag legacy: ['SV-81049', 'V-66559']
   tag cci: ['CCI-000172']
   tag nist: ['AU-12 c']
+
+  describe command('show configuration system syslog | display set') do
+    let(:stdout) { subject.stdout }
+
+    it 'should log configuration changes' do
+      expect(stdout).to match(/set system syslog .* change-log info/)
+    end
+
+    it 'should log privileged commands' do
+      expect(stdout).to match(/set system syslog .* interactive-commands any/)
+    end
+
+    it 'should log user authorization events' do
+      expect(stdout).to match(/set system syslog .* authorization info/)
+    end
+
+    it 'should have global logging enabled' do
+      expect(stdout).to match(/set system syslog .* any any/)
+    end
+  end  
 end
