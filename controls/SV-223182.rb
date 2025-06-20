@@ -44,4 +44,17 @@ set host <syslog server address> change-log <info | any>'
   tag legacy: ['SV-80951', 'V-66461']
   tag cci: ['CCI-001403']
   tag nist: ['AC-2 (4)']
+
+  # Check the syslog configuration for logging account modification events
+  describe command('show configuration system syslog | display set') do
+    let(:syslog_config) { subject.stdout }
+
+    it 'should log configuration changes which include account modifications' do
+      expect(syslog_config).to match(/set system syslog .+ change/)
+    end
+
+    it 'should log to a valid file or remote host destination' do
+      expect(syslog_config).to match(/set system syslog (file|host) .+ any .+/)
+    end
+  end
 end

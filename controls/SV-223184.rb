@@ -44,4 +44,21 @@ set host <syslog server address> change-log <info | any>'
   tag legacy: ['SV-80955', 'V-66465']
   tag cci: ['CCI-001405']
   tag nist: ['AC-2 (4)']
+
+  # Check the syslog configuration for logging account removal events
+  # This command checks the syslog configuration for logging account removal events
+  # It ensures that the syslog is set to log change-log events with severity info or any
+  # and that it is configured to log to a valid file or remote host destination
+  # The command output is expected to match the specified patterns for proper logging
+  describe command('show configuration system syslog | display set') do
+    let(:syslog_config) { subject.stdout }
+
+    it 'should enable logging of configuration changes including account removal' do
+      expect(syslog_config).to match(/set system syslog .+ change/)
+    end
+
+    it 'should log to a valid output (file or remote host)' do
+      expect(syslog_config).to match(/set system syslog (file|host) .+ any .+/)
+    end
+  end  
 end

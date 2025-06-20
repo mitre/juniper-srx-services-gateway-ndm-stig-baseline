@@ -28,8 +28,19 @@ set system services ssh max-sessions-per-connection 1'
   tag cci: ['CCI-000054']
   tag nist: ['AC-10']
 
-  describe command('show configuration system services ssh | display set | match connection-limit') do
-    its('stdout.strip') { should match(/^set system services ssh connection-limit ([0-9]|10)/) }
-  end
-  
+  # describe command('show configuration system services ssh | display set | match connection-limit') do
+  #   its('stdout.strip') { should match(/^set system services ssh connection-limit ([0-9]|10)/) }
+  # end
+
+  # Check the SSH connection limit
+  describe command('show configuration system services ssh | display set') do
+    let(:ssh_config) { subject.stdout }
+
+    it 'should include a maximum session limit of 10 or less' do
+      expect(ssh_config).to match(/set system services ssh connection-limit \d+/)
+
+      limit_line = ssh_config[/set system services ssh connection-limit (\d+)/, 1]
+      expect(limit_line.to_i).to be <= 10
+    end
+  end  
 end

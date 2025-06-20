@@ -44,4 +44,21 @@ set host <syslog server address> change-log <info | any>'
   tag legacy: ['SV-80953', 'V-66463']
   tag cci: ['CCI-001404']
   tag nist: ['AC-2 (4)']
+
+  # Check the syslog configuration for logging account disablement events
+  # This command checks the syslog configuration for logging account disablement events
+  # It ensures that the syslog is set to log change-log events with severity info or any
+  # and that it is configured to log to a valid file or remote host destination
+  # The command output is expected to match the specified patterns for proper logging
+  describe command('show configuration system syslog | display set') do
+    let(:syslog_config) { subject.stdout }
+
+    it 'should log configuration changes which include account disablement events' do
+      expect(syslog_config).to match(/set system syslog .+ change/)
+    end
+
+    it 'should log to a file or remote host for audit tracking' do
+      expect(syslog_config).to match(/set system syslog (file|host) .+ any .+/)
+    end
+  end 
 end
