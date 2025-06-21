@@ -28,4 +28,23 @@ set host <syslog server address> any <info | any>'
   tag legacy: ['SV-81055', 'V-66565']
   tag cci: ['CCI-000172']
   tag nist: ['AU-12 c']
+
+  # Check if the syslog configuration includes logging for login events
+  describe command('show configuration system syslog') do
+    its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*authorization\s+(info|any);/) }
+  end
+
+  # Check if the syslog configuration includes any logging
+  describe command('show configuration system syslog') do
+    its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*authorization\s+(info|any);/) }
+  end
+
+  # Check if the syslog configuration includes any logging for remote login sessions
+  describe 'Login event logging via syslog' do
+    subject { command('show log messages | match sshd').stdout }
+
+    it 'should include login attempts' do
+      expect(subject).to match(/sshd\[\d+\]:.+(Accepted|Failed).+for.+from/)
+    end
+  end  
 end

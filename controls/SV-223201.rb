@@ -23,4 +23,14 @@ set system time-zone UTC'
   tag legacy: ['SV-80973', 'V-66483']
   tag cci: ['CCI-001890']
   tag nist: ['AU-8 b']
+
+    # Check system time zone configuration
+  describe command('show configuration system time-zone') do
+    its('stdout') { should match(/^time-zone UTC$/) }
+  end
+
+  # Additionally, verify the current system time is in UTC (heuristic)
+  describe command('show system uptime') do
+    its('stdout') { should match(/UTC/) }
+  end
 end

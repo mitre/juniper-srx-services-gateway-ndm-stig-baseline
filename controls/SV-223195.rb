@@ -28,4 +28,22 @@ set host <syslog server address> any any'
   tag legacy: ['SV-81057', 'V-66567']
   tag cci: ['CCI-000172']
   tag nist: ['AU-12 c']
+
+  # First test: Check the device syslog configuration to confirm
+  # it is set to send 'interactive-commands' logs of severity 'info' or 'any'
+  describe command('show configuration system syslog') do
+    its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*interactive-commands\s+(info|any);/) }
+  end
+
+  # Second test: Verify that privileged commands are actually being logged
+  # by searching the system log messages for typical CLI command log entries.
+  describe 'Syslog messages for privileged commands' do
+    # Run a command that filters the log messages for entries related to interactive commands
+    subject { command('show log messages | match UI_CMDLINE_READ_LINE').stdout }
+
+    # Expect to find lines indicating commands executed by a user
+    it 'should include interactive command logs' do
+      expect(subject).to match(/UI_CMDLINE_READ_LINE: User .+ command:/)
+    end
+  end  
 end

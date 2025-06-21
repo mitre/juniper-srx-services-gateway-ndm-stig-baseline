@@ -35,4 +35,16 @@ set system syslog user * daemon critical"
   tag legacy: ['SV-80969', 'V-66479']
   tag cci: ['CCI-001858']
   tag nist: ['AU-5 (2)']
+
+  # Check if system console logging includes critical alerts or higher
+  describe command('show configuration system syslog console | display set') do
+    its('stdout') { should match(/set system syslog console any critical/) }
+  end
+
+  # Check if system console logging includes log processing failure messages
+  # Log processing failure messages usually appear with severity 'critical' or facility 'daemon'
+  # This is a heuristic check — exact message match may vary by Junos version
+  describe command("show log messages | match '(log processing failure|syslog error|syslog failure)'") do
+    its('stdout') { should_not eq '' }
+  end
 end

@@ -37,6 +37,27 @@ inputs:
     value: ['admin', 'aaron.lippold', 'george.dias', 'sean.cai']
     required: true
 
+  # SV-223198
+  - name: expected_syslog_file_size
+    description: 'Expected max syslog file size'
+    type: string
+    value: '10m'
+
+  # SV-223198
+  - name: expected_syslog_file_rotation
+    description: 'Expected number of syslog file archives'
+    type: Numeric
+    value: 3
+
+  # SV-223202
+  - name: authorized_software_install_roles
+    description: 'List of authorized roles that include software install permission'
+    type: array
+    value:  ['super-user', 'install-admin']
+    required: true
+
+
+
   # SV-223232
   - name: client_alive_count_max
     description: 'Maximum number of client-alive probes the client will tolerate before it disconnects the SSH session'

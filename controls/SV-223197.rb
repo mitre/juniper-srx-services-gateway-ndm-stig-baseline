@@ -43,4 +43,18 @@ set system syslog console any any'
   tag legacy: ['SV-81061', 'V-66571']
   tag cci: ['CCI-000135']
   tag nist: ['AU-3 (1)']
+
+  # Check syslog configuration includes interactive-commands logging to a remote host
+  describe command('show configuration system syslog') do
+    its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*interactive-commands\s+(info|any);/) }
+  end
+
+  # Check actual log messages contain command text entries (UI_CMDLINE_READ_LINE)
+  describe 'Privileged commands full-text log entries' do
+    subject { command('show log messages | match UI_CMDLINE_READ_LINE').stdout }
+
+    it 'should include full-text command log entries' do
+      expect(subject).to match(/UI_CMDLINE_READ_LINE: User .+ command:/)
+    end
+  end  
 end

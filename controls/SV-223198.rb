@@ -27,4 +27,20 @@ set file <log filename> any any archive size <file size> file <number of archive
   tag legacy: ['SV-80967', 'V-66477']
   tag cci: ['CCI-001849']
   tag nist: ['AU-4']
+
+  expected_size = input('expected_syslog_file_size')
+  expected_files = input('expected_syslog_file_rotation')
+
+  # Check messages file size limit and rotation count
+  describe 'Local syslog file messages configuration' do
+    subject { command('show configuration system syslog file messages | display set').stdout }
+
+    it "should set the messages log file size to #{expected_size}" do
+      expect(subject).to match(/set system syslog file messages size #{Regexp.escape(expected_size)}/)
+    end
+
+    it "should set the number of archived messages log files to #{expected_files}" do
+      expect(subject).to match(/set system syslog file messages files #{expected_files}/)
+    end
+  end
 end

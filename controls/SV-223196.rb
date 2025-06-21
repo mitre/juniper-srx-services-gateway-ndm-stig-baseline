@@ -28,4 +28,34 @@ set host <syslog server address> any any'
   tag legacy: ['SV-81059', 'V-66569']
   tag cci: ['CCI-000172']
   tag nist: ['AU-12 c']
+
+  # Notes
+  # This control only detects potential concurrency by multiple login entries with different source IPs.
+  # Junos SRX does not track active sessions per user natively in logs for concurrency checks.
+  # For real-time or more precise session concurrency detection, use external tools (SIEM, NAC, AAA servers).
+
+  # Sample log extraction and check for multiple login sources per user
+  # This is a basic heuristic scan for multiple successful login events for the same user from different IPs.
+  describe 'Check for concurrent logons from different IPs for same user' do
+    subject { command("show log messages | match 'Accepted password for'").stdout.lines }
+
+    it 'should not have multiple concurrent login entries from different IPs for the same user' do
+      user_ips = {}
+      subject.each do |line|
+        # Extract user and IP from log line e.g.
+        # sshd[1234]: Accepted password for admin from 192.0.2.10 port 514 ssh2
+        if line =~ /Accepted password for (\S+) from ([\d\.]+)/
+          user = Regexp.last_match(1)
+          ip = Regexp.last_match(2)
+          user_ips[user] ||= Set.new
+          user_ips[user] << ip
+        end
+      end
+
+      # Fail if any user has logins from more than one IP address (basic concurrent login indicator)
+      user_ips.each do |user, ips|
+        expect(ips.size).to be <= 1, "User #{user} has concurrent logins from multiple IPs: #{ips.to_a.join(', ')}"
+      end
+    end
+  end
 end

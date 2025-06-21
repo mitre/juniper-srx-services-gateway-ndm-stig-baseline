@@ -40,4 +40,10 @@ set host <syslog server address> change-log <info | any>'
   tag legacy: ['SV-81053', 'V-66563']
   tag cci: ['CCI-000172']
   tag nist: ['AU-12 c']
+
+  # Check if the syslog configuration includes change-log logging
+  describe command('show configuration system syslog') do
+    its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*change-log\s+(info|any);/) }
+  end
+
 end

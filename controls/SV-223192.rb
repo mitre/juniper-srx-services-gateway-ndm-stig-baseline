@@ -40,4 +40,18 @@ set host <syslog server address> change-log <info | any>'
   tag legacy: ['SV-81051', 'V-66561']
   tag cci: ['CCI-000172']
   tag nist: ['AU-12 c']
+  
+  # Check if the syslog configuration includes change-log logging
+  describe command('show configuration system syslog') do
+    its('stdout') { should match(/host\s+\S+\s+\{[^}]*change-log\s+(info|any);/) }
+  end
+
+  # Check if the syslog configuration includes any logging
+  describe 'External Syslog Server Configuration' do
+    subject { command('show configuration system syslog').stdout }
+
+    it 'should contain at least one external syslog host with change-log logging' do
+      expect(subject).to match(/host\s+(\d{1,3}\.){3}\d{1,3}\s+\{[^}]*change-log\s+(info|any);/)
+    end
+  end
 end
