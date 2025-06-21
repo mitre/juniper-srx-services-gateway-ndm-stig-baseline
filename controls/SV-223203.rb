@@ -28,4 +28,75 @@ set interfaces lo0 unit 0 family inet6 address 2100::250/128'
   tag legacy: ['SV-80505', 'V-66015']
   tag cci: ['CCI-000366']
   tag nist: ['CM-6 b']
+  
+  # Get the entire lo0 configuration block
+  lo0_config = command('show configuration interfaces lo0').stdout.strip
+
+  if lo0_config.empty?
+    # Skip control if lo0 is not configured at all
+    describe 'Loopback interface lo0' do
+      skip 'lo0 is not configured — skipping all filter checks.'
+    end
+  else
+
+    # --- IPv4 (inet) Checks ---
+    # Check if an IPv4 address is configured under lo0
+    describe 'IPv4 address configured on lo0' do
+      it 'should include a family inet address' do
+        expect(lo0_config).to match(/family inet\s+{\s+.*address\s+/m)
+      end
+    end
+
+    # If an inet address is present, check for an input filter
+    if lo0_config =~ /family inet\s+{\s+.*address\s+/m
+      ipv4_filter_match = lo0_config.match(/family inet\s+{\s+filter\s+{\s+input\s+(\S+);/m)
+
+      describe 'IPv4 input filter' do
+        it 'should be applied to lo0 inet family' do
+          expect(ipv4_filter_match).not_to be_nil
+        end
+      end
+
+      # If a filter is found, verify its definition exists and includes valid terms
+      if ipv4_filter_match
+        filter_name = ipv4_filter_match[1]
+        describe command("show configuration firewall family inet filter #{filter_name}") do
+          its('stdout') { |out|
+            expect(out).to match(/term .* from/)
+            expect(out).to match(/term .* then/)
+          }
+        end
+      end
+    end
+
+    # --- IPv6 (inet6) Checks ---
+    # Check if an IPv6 address is configured under lo0
+    describe 'IPv6 address configured on lo0' do
+      it 'should include a family inet6 address' do
+        expect(lo0_config).to match(/family inet6\s+{\s+.*address\s+/m)
+      end
+    end
+
+    # If an inet6 address is present, check for an input filter
+    if lo0_config =~ /family inet6\s+{\s+.*address\s+/m
+      ipv6_filter_match = lo0_config.match(/family inet6\s+{\s+filter\s+{\s+input\s+(\S+);/m)
+
+      describe 'IPv6 input filter' do
+        it 'should be applied to lo0 inet6 family' do
+          expect(ipv6_filter_match).not_to be_nil
+        end
+      end
+
+      # If a filter is found, verify its definition exists and includes valid terms
+      if ipv6_filter_match
+        filter_name = ipv6_filter_match[1]
+        describe command("show configuration firewall family inet6 filter #{filter_name}") do
+          its('stdout') { |out|
+            expect(out).to match(/term .* from/)
+            expect(out).to match(/term .* then/)
+          }
+        end
+      end
+    end
+  end
 end

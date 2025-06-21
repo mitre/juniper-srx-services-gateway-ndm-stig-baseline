@@ -28,4 +28,37 @@ set system ntp source-address <MGT-IP-Address>'
   tag legacy: ['SV-80977', 'V-66487']
   tag cci: ['CCI-000366', 'CCI-004928', 'CCI-004922', 'CCI-001893']
   tag nist: ['CM-6 b', 'SC-45 (2) (a)', 'SC-45', 'AU-8 (2)']
+
+  # Minimum number of NTP servers required (e.g., 2)
+  min_ntp_servers = input('min_ntp_servers')
+
+  # Get the list of configured NTP servers from Junos config
+  cmd = command('show configuration system ntp | display set | match "server"')
+
+  # If no NTP servers configured, skip further testing
+  if cmd.stdout.strip.empty?
+    describe 'NTP server configuration' do
+      skip 'No NTP servers configured; skipping NTP server configuration checks.'
+    end
+  else
+    # Verify command ran successfully and output is not empty
+    describe 'NTP server configuration' do
+      it 'should have at least one server configured' do
+        expect(cmd.exit_status).to eq 0
+        expect(cmd.stdout).not_to be_empty
+      end
+    end
+
+    # Extract the lines that actually configure NTP servers
+    ntp_servers = cmd.stdout.lines.select { |line| line.match?(/^set system ntp server \S+/) }
+
+    # Check that the count of configured NTP servers meets or exceeds minimum required
+    describe ntp_servers do
+      it "should include at least #{min_ntp_servers} NTP servers" do
+        expect(ntp_servers.count).to be >= min_ntp_servers
+      end
+    end
+  end
+
+
 end

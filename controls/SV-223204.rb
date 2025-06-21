@@ -23,4 +23,32 @@ set system max-configuration-rollbacks <organization-defined number>'
   tag legacy: ['SV-81085', 'V-66595']
   tag cci: ['CCI-000366']
   tag nist: ['CM-6 b']
+
+  # Load the minimum required rollback count from InSpec inputs
+  min_rollbacks = input('min_rollback_configs')
+
+  # Run the command to get the configured max rollback count
+  cmd = command('show configuration system max-configuration-rollbacks')
+
+  describe 'Max configuration rollbacks setting' do
+    it 'should be present in the configuration' do
+      expect(cmd.exit_status).to eq 0
+      expect(cmd.stdout).not_to be_empty
+    end
+  end
+
+  if cmd.stdout.strip.empty?
+    # If not explicitly set, Junos defaults to 0 — treat as non-compliant
+    describe 'Rollback count' do
+      it 'should be explicitly configured' do
+        fail 'max-configuration-rollbacks is not set; default is 0, which is non-compliant.'
+      end
+    end
+  else
+    rollback_count = cmd.stdout.strip.to_i
+
+    describe rollback_count do
+      it { should be >= min_rollbacks }
+    end
+  end  
 end

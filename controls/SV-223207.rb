@@ -59,4 +59,43 @@ For this example, assume the transferred the X.509 certificate called "device-ce
   tag legacy: ['SV-80983', 'V-66493']
   tag cci: ['CCI-000366', 'CCI-001159', 'CCI-004068']
   tag nist: ['CM-6 b', 'SC-17 a', 'IA-5 (2) (b) (2)']
+
+# List of acceptable DoD CA issuer patterns
+  dod_ca_patterns = [
+    /DOD\s+Root\s+CA/i,
+    /DOD\s+Email\s+CA/i,
+    /DOD\s+ID\s+CA/i,
+    /U\.S\.\s+Government\s+CA/i
+  ]
+
+  # Get details about the configured local certificate
+  cert_output = command('show security pki local-certificate').stdout
+
+  describe 'Local certificate is configured' do
+    it 'should have a valid certificate block' do
+      expect(cert_output).not_to be_empty
+      expect(cert_output).to match(/Certificate identifier: \S+/)
+    end
+  end
+
+  # Extract the issuer line from the certificate block
+  issuer_line = cert_output.lines.find { |line| line.strip.start_with?('Issuer:') }
+
+  describe 'Certificate issuer' do
+    it 'should be issued by a DoD-approved CA' do
+      expect(issuer_line).not_to be_nil
+      expect(dod_ca_patterns.any? { |pattern| issuer_line.match?(pattern) }).to eq true
+    end
+  end
+
+  # Optional: Fail if subject and issuer are the same (likely a self-signed cert)
+  subject_line = cert_output.lines.find { |line| line.strip.start_with?('Subject:') }
+
+  describe 'Certificate is not self-signed' do
+    it 'should have different subject and issuer' do
+      expect(subject_line).not_to be_nil
+      expect(issuer_line).not_to be_nil
+      expect(subject_line.strip).not_to eq issuer_line.strip
+    end
+  end  
 end

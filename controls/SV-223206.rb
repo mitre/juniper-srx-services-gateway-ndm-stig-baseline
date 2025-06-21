@@ -36,4 +36,44 @@ Note: DOD policy is that redundant AAA servers are required to mitigate the risk
   tag legacy: ['SV-80979', 'V-66489']
   tag cci: ['CCI-000366', 'CCI-000370', 'CCI-003627', 'CCI-003628', 'CCI-003831', 'CCI-004046', 'CCI-004047', 'CCI-004058', 'CCI-004059', 'CCI-004060', 'CCI-004061', 'CCI-004063', 'CCI-004064', 'CCI-004065', 'CCI-004068']
   tag nist: ['CM-6 b', 'CM-6 (1)', 'AC-2 (3) (a)', 'AC-2 (3) (b)', 'AU-9 b', 'IA-2 (6) (a)', 'IA-2 (6) (b)', 'IA-5 (1) (a)', 'IA-5 (1) (a)', 'IA-5 (1) (a)', 'IA-5 (1) (b)', 'IA-5 (1) (e)', 'IA-5 (1) (f)', 'IA-5 (1) (g)', 'IA-5 (2) (b) (2)']
+
+  # Run command to get all system authentication-related settings
+  auth_config = command('show configuration system | display set | match "authentication"').stdout
+
+  describe 'AAA Authentication configuration presence' do
+    it 'should not be empty' do
+      expect(auth_config).not_to be_empty
+    end
+  end
+
+  #
+  # Check if an authentication-order is defined and includes radius or tacplus
+  #
+  describe 'Authentication order includes AAA service' do
+    it 'should include radius or tacplus in the configured authentication order' do
+      expect(auth_config).to match(/set system authentication-order .*radius|tacplus/)
+    end
+  end
+
+  #
+  # Check if at least one AAA server (radius or tacplus) is configured
+  #
+  auth_servers = command('show configuration system | display set | match "radius-server\\|tacplus-server"').stdout
+
+  describe 'Authentication servers configured' do
+    it 'should include at least one RADIUS or TACACS+ server' do
+      expect(auth_servers.strip).not_to be_empty
+    end
+  end
+
+  #
+  # Check if a remote template user is defined
+  #
+  user_template = command('show configuration system login user remote').stdout
+
+  describe 'Remote user template exists' do
+    it 'should define a user "remote" with a class' do
+      expect(user_template).to match(/class\s+\S+/)
+    end
+  end  
 end

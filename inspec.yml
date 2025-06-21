@@ -56,7 +56,19 @@ inputs:
     value:  ['super-user', 'install-admin']
     required: true
 
-
+  # SV-223204
+  - name: min_rollback_configs
+    description: 'Minimum number of configuration rollbacks to retain'
+    type: numeric
+    value: 5
+    required: true
+  
+  # SV-223205
+  - name: min_ntp_servers
+    description: 'Minimum number of NTP servers to configure'
+    type: Numeric
+    value: 0
+    required: false
 
   # SV-223232
   - name: client_alive_count_max
