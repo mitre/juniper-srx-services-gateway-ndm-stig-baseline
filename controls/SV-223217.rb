@@ -43,4 +43,33 @@ Retype new password to confirm.'
   tag legacy: ['SV-81005', 'V-66515']
   tag cci: ['CCI-004066', 'CCI-000205']
   tag nist: ['IA-5 (1) (h)', 'IA-5 (1) (a)']
+
+   # Run the Junos command to retrieve password policy settings in "set" format
+  password_policy_config = command('show configuration system login password | display set').stdout.strip
+
+  
+  # Check if password policy is missing entirely (i.e., no output from the command)
+  if password_policy_config.empty?
+    describe 'Password policy configuration' do
+      it 'should be explicitly set in the configuration' do
+        # This will fail the control if nothing is configured under system login password
+        failure_message = 'No password policy is configured under system login password'
+        expect(password_policy_config).not_to be_empty, failure_message
+      end
+    end
+  else
+    # Check if minimum-length is set and its value is at least 15
+    describe 'Minimum password length' do
+      it 'should be set to 15 or more characters' do
+        # Look for the line: set system login password minimum-length <number>
+        min_length_match = password_policy_config.match(/^set system login password minimum-length (\d+)/)
+
+        # Fail if the setting is missing
+        expect(min_length_match).not_to be_nil, 'minimum-length is not set in system login password'
+
+        # Fail if the value is less than 15
+        expect(min_length_match[1].to_i).to be >= 15
+      end
+    end
+  end
 end

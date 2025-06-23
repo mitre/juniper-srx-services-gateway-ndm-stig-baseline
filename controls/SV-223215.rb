@@ -48,4 +48,20 @@ delete system login user <account name>'
   tag legacy: ['SV-81001', 'V-66511']
   tag cci: ['CCI-000382']
   tag nist: ['CM-7 b']
+
+  # Fetch configured local users
+  user_config = command('show configuration system login | display set | match "^set system login user"').stdout
+
+  # Extract all defined users
+  user_lines = user_config.lines.select { |line| line =~ /^set system login user (\S+)/ }
+  usernames = user_lines.map { |line| line.match(/^set system login user (\S+)/)[1] }.uniq
+
+  # Remove root from the user list
+  local_non_root_users = usernames.reject { |u| u == 'root' }
+
+  describe 'Number of local user accounts (excluding root)' do
+    it 'should be exactly one account used as account of last resort' do
+      expect(local_non_root_users.count).to eq(1)
+    end
+  end  
 end

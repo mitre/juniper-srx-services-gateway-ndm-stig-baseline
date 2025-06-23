@@ -26,7 +26,19 @@ set system services ssh root-login deny'
   tag cci: ['CCI-000382']
   tag nist: ['CM-7 b']
 
-  describe command('show configuration system services ssh root-login | display set | match root-login') do
-    its('stdout.strip') { should match(/^set system services ssh root-login deny/) }
+  # Run the command to display SSH configuration
+  ssh_config = command('show configuration system services ssh | display set').stdout
+
+  # Skip if SSH is not configured at all
+  if ssh_config.strip.empty?
+    describe 'SSH service' do
+      skip 'SSH is not configured — root login restriction not applicable.'
+    end
+  else
+    describe 'SSH root login setting' do
+      it 'should explicitly deny root login' do
+        expect(ssh_config).to match(/^set system services ssh root-login deny$/)
+      end
+    end
   end
 end

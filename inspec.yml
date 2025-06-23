@@ -70,14 +70,21 @@ inputs:
     value: 0
     required: false
 
+  # SV-223228
+  - name: allowed_mgmt_zones
+    description: 'List of management zones allowed to have host-inbound-traffic system-services configured'
+    type: array
+    value: ['trust']
+    required: false
+
   # SV-223232
-  - name: client_alive_count_max
+  - name: keepalive_count
     description: 'Maximum number of client-alive probes the client will tolerate before it disconnects the SSH session'
     type: Numeric
 
   # SV-223232
-  - name: client_alive_interval
-    description: 'Internal in seconds between client-alive probes sent to the SSH client'
+  - name: keepalive_interval
+    description: 'Internal in seconds between client-alive probes sent to the SSH client.'
     type: Numeric
 
   # SV-223234
@@ -85,3 +92,16 @@ inputs:
     description: ''
     type: Numeric
     value: 4
+
+  # SV-223235
+  - name: redundancy_required
+    description: 'Whether service redundancy is required by organizational policy'
+    type: boolean
+    value: false
+
+  # SV-223236
+  - name: min_junos_version
+    description: 'Minimum Junos version required by organization'
+    type: string
+    value: '12.1X46'
+

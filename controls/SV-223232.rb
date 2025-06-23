@@ -27,8 +27,37 @@ set system services ssh client-alive-interval <organization-defined value>'
   tag cci: ['CCI-001133']
   tag nist: ['SC-10']
 
-  describe command('show configuration system services ssh | display set | match client-alive') do
-    its('stdout.strip') { should match(/^set system services ssh client-alive-count-max #{input('client_alive_count_max').to_s}/) }
-    its('stdout.strip') { should match(/^set system services ssh client-alive-interval #{input('client_alive_interval').to_s}/) }
+  # describe command('show configuration system services ssh | display set | match client-alive') do
+  #   its('stdout.strip') { should match(/^set system services ssh client-alive-count-max #{input('keepalive_count').to_s}/) }
+  #   its('stdout.strip') { should match(/^set system services ssh client-alive-interval #{input('keepalive_interval').to_s}/) }
+  # end
+  # Define your organization-specific values here
+  org_keepalive_interval = input('keepalive_interval', value: 10, description: 'Organization-defined SSH keep-alive interval in seconds')
+  org_keepalive_count    = input('keepalive_count', value: 3, description: 'Organization-defined SSH keep-alive count')
+
+  # Get SSH keepalive-interval config line
+  keepalive_interval_config = command('show configuration system services ssh | display set | match keepalive-interval').stdout.strip
+
+  # Get SSH keepalive-count config line
+  keepalive_count_config = command('show configuration system services ssh | display set | match keepalive-count').stdout.strip
+
+  describe 'SSH keepalive-interval configuration' do
+    it 'should be set' do
+      expect(keepalive_interval_config).not_to be_empty
+    end
+
+    it "should be set to #{org_keepalive_interval}" do
+      expect(keepalive_interval_config).to match(/keepalive-interval #{org_keepalive_interval}$/)
+    end
   end
+
+  describe 'SSH keepalive-count configuration' do
+    it 'should be set' do
+      expect(keepalive_count_config).not_to be_empty
+    end
+
+    it "should be set to #{org_keepalive_count}" do
+      expect(keepalive_count_config).to match(/keepalive-count #{org_keepalive_count}$/)
+    end
+  end  
 end

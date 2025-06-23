@@ -33,4 +33,31 @@ security-level privacy notify-view all'
   tag legacy: ['SV-80945', 'V-66455']
   tag cci: ['CCI-003123']
   tag nist: ['MA-4 (6)']
+
+  # Fetch SNMP configuration
+  snmp_config = command('show configuration snmp | display set').stdout.strip
+
+  if snmp_config.empty?
+    describe 'SNMP configuration' do
+      skip 'SNMP is not configured — this control is not applicable.'
+    end
+  else
+    describe 'SNMPv1/v2c community strings' do
+      it 'should not be configured' do
+        expect(snmp_config).not_to match(/^set snmp community /)
+      end
+    end
+
+    describe 'SNMPv3 privacy configuration' do
+      it 'should include AES-based privacy protocols (AES-128, AES-192, AES-256)' do
+        expect(snmp_config).to match(/privacy-aes(128|192|256)/)
+      end
+    end
+
+    describe 'SNMPv3 authentication configuration' do
+      it 'should also include authentication (SHA or better)' do
+        expect(snmp_config).to match(/authentication-sha/)
+      end
+    end
+  end
 end

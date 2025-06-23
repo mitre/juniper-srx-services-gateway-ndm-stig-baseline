@@ -54,4 +54,40 @@ set snmp view all oid snmpMIBObjects include'
   tag legacy: ['SV-80941', 'V-66451']
   tag cci: ['CCI-000382', 'CCI-001967']
   tag nist: ['CM-7 b', 'IA-3 (1)']
+
+  # Get the full SNMP configuration stanza
+  snmp_config = command('show configuration snmp | display set').stdout
+
+  if snmp_config.strip.empty?
+    # ✅ SNMP is not enabled — this is NOT a finding
+    describe 'SNMP configuration' do
+      skip 'SNMP is not configured on the device. Skipping SNMPv3 security checks — this is not a finding.'
+    end
+  else
+    # ✅ SNMP is enabled — continue checking for secure SNMPv3 usage
+
+    describe 'SNMPv1/v2c is disabled' do
+      it 'should not include SNMP community strings (SNMPv1/v2c)' do
+        expect(snmp_config).not_to match(/^set snmp community /)
+      end
+    end
+
+    describe 'SNMPv3 user configuration' do
+      it 'should include a v3 USM user definition' do
+        expect(snmp_config).to match(/set snmp v3 usm local-engine user \S+/)
+      end
+    end
+
+    describe 'SNMPv3 authentication protocol' do
+      it 'should specify an authentication method like SHA' do
+        expect(snmp_config).to match(/authentication-sha/)
+      end
+    end
+
+    describe 'SNMPv3 privacy protocol' do
+      it 'should specify a privacy protocol like AES' do
+        expect(snmp_config).to match(/privacy-aes(128|192|256)/)
+      end
+    end
+  end  
 end

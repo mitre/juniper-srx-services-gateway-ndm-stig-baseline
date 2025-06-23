@@ -19,4 +19,44 @@ If the Junos version installed is not 12.1 X46 or later, this is a finding.'
   tag legacy: ['SV-81037', 'V-66547']
   tag cci: ['CCI-000366']
   tag nist: ['CM-6 b']
+
+  # Input: minimum required Junos version (e.g., '12.1X46', '15.1X49')
+  minimum_version = input('min_junos_version')
+
+  # Run `show version` to get the current version
+  version_output = command('show version').stdout
+
+  # Extract actual version from output
+  match = version_output.match(/^Junos:\s+(\S+)/)
+
+  describe 'Junos version line found' do
+    it 'should be present in output' do
+      expect(match).not_to be_nil
+    end
+  end
+
+  if match
+    current_version = match[1]
+    describe "Detected Junos version: #{current_version}" do
+      it "should be equal to or newer than #{minimum_version}" do
+        # Compare versions using a helper function
+        def version_to_tuple(ver)
+          # Handles both numbered and lettered (e.g., X46) Junos formats
+          if ver =~ /^(\d+)\.(\d+)(X(\d+))?/
+            major = Regexp.last_match(1).to_i
+            minor = Regexp.last_match(2).to_i
+            xtrain = Regexp.last_match(4)&.to_i || 0
+            [major, minor, xtrain]
+          else
+            [0, 0, 0]
+          end
+        end
+
+        expected = version_to_tuple(minimum_version)
+        actual   = version_to_tuple(current_version)
+
+        expect(actual).to be >= expected
+      end
+    end
+  end
 end

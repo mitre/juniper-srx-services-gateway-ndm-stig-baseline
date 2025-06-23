@@ -24,4 +24,24 @@ Remove unauthorized protocols (e.g., HTTP, HTTPS) from management zones that are
   tag legacy: ['SV-81023', 'V-66533']
   tag cci: ['CCI-003123']
   tag nist: ['MA-4 (6)']
+
+  # Input: array of zones allowed to have management system-services
+  allowed_zones = input('allowed_mgmt_zones')
+
+  # Get all zones configured with host-inbound-traffic system-services
+  zones_with_mgmt_services_raw = command('show configuration security zones | display set | match "host-inbound-traffic system-services"').stdout
+
+  # Extract zone names from the config lines
+  zones_with_mgmt_services = zones_with_mgmt_services_raw.lines.map do |line|
+    match = line.match(/^set security zones security-zone (\S+) host-inbound-traffic system-services/)
+    # Return the zone name if it matches the expected pattern
+    match ? match[1] : nil
+  end.compact.uniq
+
+  describe 'Zones with management system-services configured' do
+    it 'should be a subset of allowed zones only' do
+      unexpected_zones = zones_with_mgmt_services - allowed_zones
+      expect(unexpected_zones).to be_empty, "Unexpected zones with management services enabled: #{unexpected_zones.join(', ')}"
+    end
+  end
 end

@@ -44,4 +44,31 @@ delete set system services ssh protocol-version v1'
   tag legacy: ['SV-80989', 'V-66499']
   tag cci: ['CCI-000382']
   tag nist: ['CM-7 b']
+
+  # Fetch configured system services
+  services_output = command('show configuration system services | display set').stdout
+
+  describe 'Insecure remote management protocols' do
+    it 'should not include telnet' do
+      expect(services_output).not_to match(/^set system services telnet/)
+    end
+
+    it 'should not include ftp' do
+      expect(services_output).not_to match(/^set system services ftp/)
+    end
+
+    it 'should not include web-management http' do
+      expect(services_output).not_to match(/^set system services web-management http/)
+    end
+  end
+
+  describe 'Secure protocols should be present' do
+    it 'should include ssh' do
+      expect(services_output).to match(/^set system services ssh/)
+    end
+
+    it 'should include web-management https' do
+      expect(services_output).to match(/^set system services web-management https/)
+    end
+  end  
 end

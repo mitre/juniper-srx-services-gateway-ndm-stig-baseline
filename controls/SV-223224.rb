@@ -27,4 +27,36 @@ set snmp v3 usm local-engine user <NAME> authentication-sha256'
   tag legacy: ['SV-80943', 'V-66453']
   tag cci: ['CCI-002890']
   tag nist: ['MA-4 (6)']
+
+
+  # Pull the SNMP configuration from the device
+  snmp_config = command('show configuration snmp | display set').stdout.strip
+
+  if snmp_config.empty?
+    # No SNMP configuration present — this is not a finding
+    describe 'SNMP configuration' do
+      skip 'SNMP is not configured — this control is not applicable.'
+    end
+  else
+    # Fail if SNMP community strings (SNMPv1/v2c) are configured
+    describe 'SNMPv1/v2c community strings' do
+      it 'should not be configured' do
+        expect(snmp_config).not_to match(/^set snmp community /)
+      end
+    end
+
+    # Confirm SNMPv3 user with SHA256+ authentication is configured
+    describe 'SNMPv3 authentication method' do
+      it 'should use SHA-256 or stronger' do
+        expect(snmp_config).to match(/authentication-sha-256|authentication-sha-384|authentication-sha-512/)
+      end
+    end
+
+    # Confirm SNMPv3 privacy method (encryption)
+    describe 'SNMPv3 privacy protocol' do
+      it 'should use AES encryption (128, 192, or 256)' do
+        expect(snmp_config).to match(/privacy-aes(128|192|256)/)
+      end
+    end
+  end  
 end

@@ -38,4 +38,42 @@ set chassis cluster redundancy-group 1 interface-monitor ge-6/0/2 weight 255'
   tag legacy: ['SV-81093', 'V-66603']
   tag cci: ['CCI-002385']
   tag nist: ['SC-5 a']
+
+  # Input flag: does the organization require redundancy?
+  redundancy_required = input('redundancy_required', value: true, description: 'Whether service redundancy is required by organizational policy')
+
+  if !redundancy_required
+    describe 'Redundancy policy' do
+      skip 'Service redundancy is not required by organizational policy — control not applicable.'
+    end
+  else
+    # Check for graceful switchover
+    gs_config = command('show configuration chassis redundancy | display set | match graceful-switchover').stdout.strip
+
+    # Check for nonstop routing
+    nsr_config = command('show configuration routing-options | display set | match nonstop-routing').stdout.strip
+
+    # Check for chassis clustering (used in high-end SRX platforms)
+    cluster_config = command('show configuration chassis cluster | display set').stdout.strip
+
+    describe.one do
+      describe 'Chassis redundancy' do
+        it 'should enable graceful-switchover' do
+          expect(gs_config).to match(/graceful-switchover/)
+        end
+      end
+
+      describe 'Routing redundancy' do
+        it 'should enable nonstop-routing' do
+          expect(nsr_config).to match(/nonstop-routing/)
+        end
+      end
+
+      describe 'Chassis cluster' do
+        it 'should be configured' do
+          expect(cluster_config).not_to be_empty
+        end
+      end
+    end
+  end
 end

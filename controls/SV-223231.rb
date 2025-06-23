@@ -31,4 +31,29 @@ set cli idle-timeout 10'
   tag legacy: ['SV-81027', 'V-66537']
   tag cci: ['CCI-001133']
   tag nist: ['SC-10']
+
+# Check CLI idle timeout
+  idle_timeout = command('show configuration system services idle-timeout | display set').stdout.strip
+  idle_timeout = command('show configuration system services | display set | match idle-timeout').stdout.strip
+
+
+  describe 'CLI idle-timeout setting' do
+    it 'should be set to 600 seconds' do
+      expect(idle_timeout).to match(/^set system services idle-timeout 600$/)
+    end
+  end
+
+  # Get all users and their assigned classes
+  users_config = command('show configuration system login user | display set').stdout.lines.map(&:strip)
+  users_config = command('show configuration system login | display set | match "^set system login user"').stdout.lines.map(&:strip)
+
+
+  describe 'All local users should have an assigned login class' do
+    users_config.each do |line|
+      it "User defined in line: #{line}" do
+        # Example line: set system login user admin class operator
+        expect(line).to match(/^set system login user \S+ class \S+/)
+      end
+    end
+  end
 end

@@ -23,4 +23,36 @@ set system login class <class name> deny-commands "(start shell)"'
   tag legacy: ['SV-80997', 'V-66507']
   tag cci: ['CCI-000382']
   tag nist: ['CM-7 b']
+
+  # Validates Two Key Conditions:
+  #   Only the root user is assigned class super-user
+  #   All other user classes explicitly use:
+  #     deny-commands "(start shell)" — to prevent UNIX shell access even if permission levels are high
+
+  # Retrieve all user configurations
+  user_config = command('show configuration system login | display set').stdout
+  super_users = user_config.lines.select { |line| line =~ /^set system login user (\S+) class super-user/ }
+  super_user_names = super_users.map { |line| line.match(/^set system login user (\S+) class super-user/)[1] }
+
+  describe 'Super-user accounts' do
+    it 'should only include root' do
+      expect(super_user_names).to eq(['root'])
+    end
+  end
+
+  # Retrieve all login class configurations that deny "start shell"
+  class_config = command('show configuration system login class | display set').stdout
+  deny_shell_classes = class_config.lines.select { |line| line.include?('deny-commands "(start shell)"') }
+  deny_class_names = deny_shell_classes.map { |line| line.match(/^set system login class (\S+) deny-commands/)[1] }.uniq
+
+  # Get all login class names assigned to non-root users
+  non_root_user_classes = user_config.lines
+    .select { |line| line =~ /^set system login user (\S+) class (\S+)/ && $1 != 'root' }
+    .map { |line| line.match(/^set system login user \S+ class (\S+)/)[1] }.uniq
+
+  describe 'Non-root login classes' do
+    it 'should deny the "start shell" command explicitly' do
+      expect(deny_class_names.sort).to include(*non_root_user_classes.sort)
+    end
+  end
 end
