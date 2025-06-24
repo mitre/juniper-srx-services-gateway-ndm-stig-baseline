@@ -31,4 +31,23 @@ set system syslog file account-actions change-log any any"
   tag legacy: ['V-66447', 'SV-80937']
   tag cci: ['CCI-000366', 'CCI-001314']
   tag nist: ['CM-6 b', 'SI-11 b']
+
+  expected_syslog_host = input('external_syslog_host')
+  syslog_minimum_severity = input('syslog_minimum_severity')
+
+  describe command('show configuration system syslog | display set') do
+    let(:syslog_config) { subject.stdout }
+
+    it 'should configure syslog users for change-log with correct severity' do
+      expect(syslog_config).to match(/set system syslog users \* change-log #{syslog_minimum_severity}/)
+    end
+
+    it 'should forward logs to the designated syslog server' do
+      expect(syslog_config).to match(/set system syslog host #{Regexp.escape(expected_syslog_host)} any any/)
+    end
+
+    it 'should log account actions to the change-log file' do
+      expect(syslog_config).to match(/set system syslog file account-actions change-log any any/)
+    end
+  end
 end

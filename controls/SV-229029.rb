@@ -16,7 +16,7 @@ If classes or users that are not authorized to have access to the logs (e.g., cr
 [edit]
 show system login
 
-If any classes  are mapped to the audit-admin, security-admin, or system-admin login templates, delete the command from the class by typing delete in front of the command or retyping the command with the permission removed from the list.
+If any classes are mapped to the audit-admin, security-admin, or system-admin login templates, delete the command from the class by typing delete in front of the command or retyping the command with the permission removed from the list.
 
 Example configuration:
 set system login class audit-admin allow-commands "(show log *)|(clear log *)|(monitor
@@ -38,4 +38,22 @@ set system login class system-admin login-alarms'
   tag legacy: ['SV-81035', 'V-66545']
   tag cci: ['CCI-000366', 'CCI-000416']
   tag nist: ['CM-6 b', 'CM-8 (3) (a)']
+
+  authorized_classes = input('authorized_classes')
+
+  describe command('show configuration system login | display set') do
+    let(:login_config) { subject.stdout }
+
+    # check if authorized classes can view or clear logs, doesnt check for the other config since thats not what the stig asks for
+    authorized_classes.each do |cls|
+      it "should include allow-commands for log viewing in #{cls}" do
+        expect(login_config).to match(/set system login class #{cls} allow-commands.*\(show log \*\)\|\(clear log \*\)\|\(monitor log \*\)/)
+      end
+    end
+
+    it 'should not allow other classes to view or clear logs' do
+      disallowed_classes = authorized_classes.join('|')
+      expect(login_config).not_to match(/set system login class (?!#{disallowed_classes}) allow-commands .*show log/)
+    end
+  end
 end

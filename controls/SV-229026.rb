@@ -41,4 +41,16 @@ delete system authentication-order password'
   tag legacy: ['SV-81087', 'V-66597']
   tag cci: ['CCI-000366', 'CCI-000371']
   tag nist: ['CM-6 b', 'CM-6 (1)']
+
+  describe command('show configuration system authentication-order | display set') do
+    let(:config) { subject.stdout }
+
+    it 'should specify either TACACS+ or RADIUS as the authentication order' do
+      expect(config).to match(/set system authentication-order (tacplus|radius)/)
+    end
+
+    it 'should not include the password method in the authentication order' do
+      expect(config).not_to match(/set system authentication-order password/)
+    end
+  end
 end

@@ -32,4 +32,14 @@ set system radius-server address <server ipaddress> port 1812 secret <shared sec
   tag legacy: ['SV-80981', 'V-66491']
   tag cci: ['CCI-000366', 'CCI-002361']
   tag nist: ['CM-6 b', 'AC-12']
+
+  describe.one do
+    describe command('show configuration system tacplus | display set') do
+      its('stdout') { should match(/set system tacplus-server address #{Regexp.escape(input('aaa_server_address'))} port 1812 secret #{Regexp.escape(input('aaa_shared_secret'))}/) }
+    end
+
+    describe command('show configuration system radius | display set') do
+      its('stdout') { should match(/set system radius-server address #{Regexp.escape(input('aaa_server_address'))} port 1812 secret #{Regexp.escape(input('aaa_shared_secret'))}/) }
+    end
+  end
 end

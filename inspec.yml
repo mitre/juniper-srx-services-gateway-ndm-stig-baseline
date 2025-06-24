@@ -35,7 +35,6 @@ inputs:
     description: 'External syslog host to which the SRX will send logs'
     type: string
     value: ''
-    required: false
 
   # SV-223186
   - name: documented_users
@@ -75,14 +74,12 @@ inputs:
     description: 'Minimum number of NTP servers to configure'
     type: Numeric
     value: 0
-    required: false
 
   # SV-223228
   - name: allowed_mgmt_zones
     description: 'List of management zones allowed to have host-inbound-traffic system-services configured'
     type: array
     value: ['trust']
-    required: false
 
   # SV-223232
   - name: keepalive_count
@@ -143,8 +140,27 @@ inputs:
     value: 15
 
   # SV-229015
-  - name: minimum_severity
-    description: 'Minimum severity for logging events such as local account creation'
+  - name: syslog_minimum_severity
+    description: 'Minimum severity for logging events such as local account creation. Set to either "info" or "any".'
     type: string
-    value: 'change'
+    value: 'any'
 
+  # SV-229024
+  - name: aaa_server_address
+    description: 'Address of the AAA server for centralized authentication (TACACS+ or RADIUS)'
+    type: string
+
+  # SV-229024
+  - name: aaa_shared_secret
+    description: 'Shared secret used for AAA server authentication'
+    type: string
+
+  # SV-229029
+  - name: authorized_classes
+    description: 'List of login classes authorized to view and clear logs'
+    type: array
+    value:
+      - audit-admin
+      - security-admin
+      - system-admin
+    required: true

@@ -36,4 +36,14 @@ Note: DOD policy is that redundant AAA servers are required to mitigate the risk
   tag legacy: ['SV-80939', 'V-66449']
   tag cci: ['CCI-000366', 'CCI-000015', 'CCI-002132']
   tag nist: ['CM-6 b', 'AC-2 (1)', 'AC-2 (4)']
+
+  describe.one do
+    describe command('show configuration system tacplus | display set') do
+      its('stdout') { should match(/set system tacplus-server address #{Regexp.escape(input('aaa_server_address'))} port 1812 secret #{Regexp.escape(input('aaa_shared_secret'))}/) }
+    end
+
+    describe command('show configuration system radius | display set') do
+      its('stdout') { should match(/set system radius-server address #{Regexp.escape(input('aaa_server_address'))} port 1812 secret #{Regexp.escape(input('aaa_shared_secret'))}/) }
+    end
+  end
 end

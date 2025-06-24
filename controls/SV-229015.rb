@@ -33,19 +33,21 @@ set system syslog file account-actions change-log any any"
   tag nist: ['AU-12 b', 'CM-6 b']
 
   expected_syslog_host = input('external_syslog_host')
-  minimum_severity = input('minimum_severity')
+  syslog_minimum_severity = input('syslog_minimum_severity')
 
   describe command('show configuration system syslog | display set') do
     let(:syslog_config) { subject.stdout }
 
-    # Ensure change-log facility is configured (catches local account creations)
-    it 'should enable change-log logging for local account creation events' do
-      expect(syslog_config).to match(/set system syslog .+ change-log/)
+    it 'should configure syslog users for change-log with correct severity' do
+      expect(syslog_config).to match(/set system syslog users \* change-log #{syslog_minimum_severity}/)
     end
 
-    # Ensure remote syslog server is configured to receive logs
     it 'should forward logs to the designated syslog server' do
-      expect(syslog_config).to match(/set system syslog host #{Regexp.escape(expected_syslog_host)} .+ #{minimum_severity}/)
+      expect(syslog_config).to match(/set system syslog host #{Regexp.escape(expected_syslog_host)} any any/)
+    end
+
+    it 'should log account actions to the change-log file' do
+      expect(syslog_config).to match(/set system syslog file account-actions change-log any any/)
     end
   end
 
