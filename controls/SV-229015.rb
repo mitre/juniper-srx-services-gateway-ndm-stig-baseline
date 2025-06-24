@@ -31,4 +31,30 @@ set system syslog file account-actions change-log any any"
   tag legacy: ['SV-80933', 'V-66443']
   tag cci: ['CCI-000171', 'CCI-000366']
   tag nist: ['AU-12 b', 'CM-6 b']
+
+  expected_syslog_host = input('external_syslog_host')
+  minimum_severity = input('minimum_severity')
+
+  describe command('show configuration system syslog | display set') do
+    let(:syslog_config) { subject.stdout }
+
+    # Ensure change-log facility is configured (catches local account creations)
+    it 'should enable change-log logging for local account creation events' do
+      expect(syslog_config).to match(/set system syslog .+ change-log/)
+    end
+
+    # Ensure remote syslog server is configured to receive logs
+    it 'should forward logs to the designated syslog server' do
+      expect(syslog_config).to match(/set system syslog host #{Regexp.escape(expected_syslog_host)} .+ #{minimum_severity}/)
+    end
+  end
+
+  describe command('show configuration system scripts commit | display set') do
+    let(:script_config) { subject.stdout }
+
+    # Optional: Check if commit scripts are used to audit account creation
+    it 'should optionally use commit scripts to trigger additional alerts for account creation' do
+      expect(script_config).to match(/set system scripts commit file/) # Customize if specific script expected
+    end
+  end
 end

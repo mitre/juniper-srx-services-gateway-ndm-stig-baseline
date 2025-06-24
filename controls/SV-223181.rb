@@ -45,6 +45,8 @@ set host <syslog server address> change-log <info | any>'
   tag cci: ['CCI-000018']
   tag nist: ['AC-2 (4)']
 
+  external_syslog = input('external_syslog_host')
+
   # Check the syslog configuration for logging account management events
   describe command('show configuration system syslog | display set') do
     let(:syslog_config) { subject.stdout }
@@ -55,6 +57,10 @@ set host <syslog server address> change-log <info | any>'
 
     it 'should log to a file or remote host' do
       expect(syslog_config).to match(/set system syslog (file|host) .+ any .+/)
+    end
+
+    it "should log to the specified external syslog server #{external_syslog}" do
+      expect(syslog_config).to match(/set system syslog host #{Regexp.escape(external_syslog)} .+ any .+/)
     end
   end
 end

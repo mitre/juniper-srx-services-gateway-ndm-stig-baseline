@@ -30,6 +30,13 @@ inspec_version: "~>6.0"
 ###
 
 inputs:
+  # SV-223181, SV-229015
+  - name: external_syslog_host
+    description: 'External syslog host to which the SRX will send logs'
+    type: string
+    value: ''
+    required: false
+
   # SV-223186
   - name: documented_users
     description: 'List of administrator and users with access to all commands'
@@ -104,4 +111,40 @@ inputs:
     description: 'Minimum Junos version required by organization'
     type: string
     value: '12.1X46'
+
+  # SV-229014
+  - name: allowed_days
+    description: 'Days users are allowed to access the system'
+    type: array
+    value: [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday'
+    ]
+
+  # SV-229014
+  - name: access_start
+    description: 'Start time for access'
+    type: string
+    value: '08:00'
+
+  # SV-229014
+  - name: access_end
+    description: 'End time for access'
+    type: string
+    value: '18:00'
+
+  # SV-229014
+  - name: idle_timeout
+    description: 'Idle timeout in minutes'
+    type: Numeric
+    value: 15
+
+  # SV-229015
+  - name: minimum_severity
+    description: 'Minimum severity for logging events such as local account creation'
+    type: string
+    value: 'change'
 

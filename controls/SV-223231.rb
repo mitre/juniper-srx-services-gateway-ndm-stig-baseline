@@ -33,7 +33,6 @@ set cli idle-timeout 10'
   tag nist: ['SC-10']
 
 # Check CLI idle timeout
-  idle_timeout = command('show configuration system services idle-timeout | display set').stdout.strip
   idle_timeout = command('show configuration system services | display set | match idle-timeout').stdout.strip
 
 
