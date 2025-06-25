@@ -28,8 +28,8 @@ set system syslog users * change-log <info | any>"
   tag cci: ['CCI-000366', 'CCI-001328']
   tag nist: ['CM-6 b', 'SI-13 (4) (b)']
 
-  expected_syslog_host = input('external_syslog_host')
   syslog_minimum_severity = input('syslog_minimum_severity')
+  syslog_minimum_severity = input('changelog_minimum_severity', value: 'info')
 
   describe command('show configuration system syslog | display set') do
     let(:syslog_config) { subject.stdout }
@@ -37,4 +37,5 @@ set system syslog users * change-log <info | any>"
     it 'should configure syslog users for change-log with correct severity' do
       expect(syslog_config).to match(/set system syslog users \* change-log #{syslog_minimum_severity}/)
     end
+  end
 end

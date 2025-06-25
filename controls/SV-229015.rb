@@ -35,28 +35,36 @@ set system syslog file account-actions change-log any any"
   expected_syslog_host = input('external_syslog_host')
   syslog_minimum_severity = input('syslog_minimum_severity')
 
+  # --------------------------------
+  # 🔍 Check system syslog settings
   describe command('show configuration system syslog | display set') do
     let(:syslog_config) { subject.stdout }
 
+    # ✅ Ensure that all user-initiated changes are logged to the change-log with the expected severity
     it 'should configure syslog users for change-log with correct severity' do
       expect(syslog_config).to match(/set system syslog users \* change-log #{syslog_minimum_severity}/)
     end
 
+    # ✅ Check that logs are being forwarded to the approved external syslog server
     it 'should forward logs to the designated syslog server' do
       expect(syslog_config).to match(/set system syslog host #{Regexp.escape(expected_syslog_host)} any any/)
     end
 
+    # ✅ Confirm that account-related log events are sent to the proper log file
     it 'should log account actions to the change-log file' do
       expect(syslog_config).to match(/set system syslog file account-actions change-log any any/)
     end
   end
 
+  # --------------------------------------------------
+  # 🔍 Optional: Check for commit script audit triggers
   describe command('show configuration system scripts commit | display set') do
     let(:script_config) { subject.stdout }
 
-    # Optional: Check if commit scripts are used to audit account creation
+    # ✅ Verify that commit scripts are present — these can be used to trigger notifications (e.g., for account creation)
     it 'should optionally use commit scripts to trigger additional alerts for account creation' do
-      expect(script_config).to match(/set system scripts commit file/) # Customize if specific script expected
+      # Customize if specific specific filenames or script are expected
+      expect(script_config).to match(/set system scripts commit file/) 
     end
   end
 end

@@ -32,7 +32,7 @@ Table of Contents
     - [InSpec (CINC-auditor) setup](#inspec-cinc-auditor-setup)
     - [Intended Usage](#intended-usage)
     - [Tailoring to Your Environment](#tailoring-to-your-environment)
-      - [Example of tailoring Inputs *While Still Complying* with the security guidance document for the profile:](#example-of-tailoring-inputs-while-still-complying-with-the-security-guidance-document-for-the-profile)
+      - [Example of tailoring Inputs *While Still Complying* with the security guidance document for the profile](#example-of-tailoring-inputs-while-still-complying-with-the-security-guidance-document-for-the-profile)
       - [Using Customized Inputs](#using-customized-inputs)
     - [Testing the Profile Controls](#testing-the-profile-controls)
       - [Requirements](#requirements)
@@ -231,11 +231,11 @@ This option is best used when network connectivity is available and policies per
 access to the hosting repository.
 
 ```bash
-# Using `ssh` transport
-bundle exec [inspec or cinc-auditor] exec https://github.com/mitre/juniper-srx-services-gateway-ndm-stig-baseline/archive/main.tar.gz --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
+# Using `juniper` transport without bastion host
+bundle exec [inspec or cinc-auditor] exec https://github.com/mitre/juniper-srx-services-gateway-ndm-stig-baseline.git --input-file=<your_inputs_file.yml> -t juniper://admin@device.example.com --password 'secret' --reporter=cli json:<your_results_file.json>
 
-# Using `winrm` transport
-bundle exec [inspec or cinc-auditor] exec https://github.com/mitre/juniper-srx-services-gateway-ndm-stig-baseline/archive/master.tar.gz --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>
+# Using `juniper` transport with bastion host
+bundle exec [inspec or cinc-auditor] exec https://github.com/mitre/juniper-srx-services-gateway-ndm-stig-baseline.git --input-file=<your_inputs_file.yml> -t juniper://admin@device.example.com --password 'secret' --bastion-host='jump-host-name' --reporter=cli json:<your_results_file.json>
 ```
 
 [top](#table-of-contents)
@@ -256,11 +256,11 @@ cd profiles
 git clone https://github.com/mitre/juniper-srx-services-gateway-ndm-stig-baseline.git
 bundle exec [inspec or cinc-auditor] archive juniper-srx-services-gateway-ndm-stig-baseline
 
-# Using `ssh` transport
-bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
+# Using `juniper` transport without bastion host
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t juniper://admin@device.example.com --password 'secret' --reporter=cli json:<your_results_file.json>
 
-# Using `winrm` transport
-bundle exec [inspec or cinc-auditor] exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
+# Using `juniper` transport with bastion host
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t juniper://admin@device.example.com --password 'secret' --bastion-host='jump-host-name' --reporter=cli json:<your_results_file.json>    
 ```
 
 For every successive run, follow these steps to always have the latest version of this profile baseline:
@@ -271,11 +271,11 @@ git pull
 cd ..
 bundle exec [inspec or cinc-auditor] archive juniper-srx-services-gateway-ndm-stig-baseline --overwrite
 
-# Using `ssh` transport
-bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
+# Using `juniper` transport without bastion host
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t juniper://admin@device.example.com --password 'secret' --reporter=cli json:<your_results_file.json>
 
-# Using `winrm` transport
-bundle exec [inspec or cinc-auditor] exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
+# Using `juniper` transport with bastion host
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t juniper://admin@device.example.com --password 'secret' --bastion-host='jump-host-name' --reporter=cli json:<your_results_file.json>     
 ```
 
 [top](#table-of-contents)

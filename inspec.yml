@@ -10,7 +10,7 @@ description: null
 version: 3.3.0
 supports: []
 depends: []
-inspec_version: "~>6.0"
+inspec_version: ">= 4.0"
 
 
 ### INPUTS ###
@@ -40,7 +40,7 @@ inputs:
   - name: documented_users
     description: 'List of administrator and users with access to all commands'
     type: array
-    value: ['admin', 'aaron.lippold', 'george.dias', 'sean.cai']
+    value: []
     required: true
 
   # SV-223198
@@ -144,6 +144,13 @@ inputs:
     description: 'Minimum severity for logging events such as local account creation. Set to either "info" or "any".'
     type: string
     value: 'any'
+
+  # SV-229021
+  - name: authorized_audit_admins
+    description: 'List of authorized user accounts or classes (roles) permitted to modify audit config'
+    type: array
+    value: []
+    required: true
 
   # SV-229024
   - name: aaa_server_address

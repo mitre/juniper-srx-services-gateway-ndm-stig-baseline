@@ -35,19 +35,34 @@ set system syslog file account-actions change-log any any"
   expected_syslog_host = input('external_syslog_host')
   syslog_minimum_severity = input('syslog_minimum_severity')
 
-  describe command('show configuration system syslog | display set') do
-    let(:syslog_config) { subject.stdout }
+  # Retrieve syslog config from the system in set-style format
+  cmd = command('show configuration system syslog | display set')
+  syslog_output = cmd.stdout
 
-    it 'should configure syslog users for change-log with correct severity' do
-      expect(syslog_config).to match(/set system syslog users \* change-log #{syslog_minimum_severity}/)
+  describe 'Syslog configuration retrieval' do
+    it 'should succeed' do
+      expect(cmd.exit_status).to eq(0)
+    end
+  end
+
+  describe 'Change-log syslog configuration' do
+    # ✅ Log change-log messages to a dedicated file
+    it 'should log change-log events with minimum severity' do
+      expect(syslog_output).to match(
+        /set system syslog file account-actions change-log any #{syslog_minimum_severity}/
+      )
     end
 
+    # ✅ Send change-log events to management console (user sessions)
+    it 'should send change-log alerts to the management console (users *)' do
+      expect(syslog_output).to match(
+        /set system syslog users \* change-log #{min_severity}/
+      )
+    end
+
+    # ✅ Check that logs are being forwarded to the approved external syslog server
     it 'should forward logs to the designated syslog server' do
       expect(syslog_config).to match(/set system syslog host #{Regexp.escape(expected_syslog_host)} any any/)
-    end
-
-    it 'should log account actions to the change-log file' do
-      expect(syslog_config).to match(/set system syslog file account-actions change-log any any/)
     end
   end
 end

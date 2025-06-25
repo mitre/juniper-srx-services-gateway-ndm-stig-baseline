@@ -71,4 +71,32 @@ set system login user ids-officer class ids-admin'
   tag legacy: ['SV-81047', 'V-66557']
   tag cci: ['CCI-000366', 'CCI-000015', 'CCI-001684']
   tag nist: ['CM-6 b', 'AC-2 (1)', 'AC-2 (4)']
+
+  # List of authorized user accounts or classes (roles) permitted to modify audit config
+  authorized_admins = input('authorized_audit_admins', value: ['aaron.lippold','george.dias','sean.cai'])
+
+  # Retrieve the full list of configured users and their permissions
+  cmd = command('show configuration system login | display set')
+  user_config = cmd.stdout
+
+  describe 'System login configuration retrieval' do
+    it 'should succeed' do
+      expect(cmd.exit_status).to eq(0)
+    end
+  end
+
+  # Extract all users and their associated classes (permissions)
+  user_class_map = user_config.lines.grep(/^set system login user/).map do |line|
+    match = line.match(/^set system login user (\S+) class (\S+)/)
+    match ? [match[1], match[2]] : nil
+  end.compact.to_h
+
+  describe 'User roles authorized to manage audit configuration' do
+    # Ensure only authorized roles or users exist with access to configure auditing
+    user_class_map.each do |user, user_class|
+      it "user #{user} with class #{user_class} must be authorized" do
+        expect(authorized_admins).to include(user) | include(user_class)
+      end
+    end
+  end  
 end
