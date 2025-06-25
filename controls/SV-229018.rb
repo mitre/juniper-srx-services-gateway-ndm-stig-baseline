@@ -62,7 +62,7 @@ set system syslog file account-actions change-log any any"
 
     # ✅ Check that logs are being forwarded to the approved external syslog server
     it 'should forward logs to the designated syslog server' do
-      expect(syslog_config).to match(/set system syslog host #{Regexp.escape(expected_syslog_host)} any any/)
+      expect(syslog_output).to match(/set system syslog host #{Regexp.escape(expected_syslog_host)} any any/)
     end
 
   end

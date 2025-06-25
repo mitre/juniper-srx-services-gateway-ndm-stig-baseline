@@ -58,13 +58,13 @@ Note: DOD policy is that redundant AAA servers are required to mitigate the risk
   #
   # Check if at least one AAA server (radius or tacplus) is configured
   #
-  auth_servers = command('show configuration system | display set | match "radius-server\\|tacplus-server"').stdout
+  auth_servers = command('show configuration system | display set').stdout
 
-  describe 'Authentication servers configured' do
-    it 'should include at least one RADIUS or TACACS+ server' do
-      expect(auth_servers.strip).not_to be_empty
+  describe 'Authentication server configuration' do
+    it 'should include RADIUS or TACACS+ configuration' do
+      expect(auth_servers).to match(/radius-server|tacplus-server/)
     end
-  end
+  end  
 
   #
   # Check if a remote template user is defined

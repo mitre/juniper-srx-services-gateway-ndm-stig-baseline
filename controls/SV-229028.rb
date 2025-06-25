@@ -32,9 +32,33 @@ set system syslog user * daemon alert"
   tag cci: ['CCI-000366', 'CCI-000372']
   tag nist: ['CM-6 b', 'CM-6 (1)']
 
-  describe command('show configuration system syslog | display set | match "user \\*"') do
-    its('stdout.strip') { should match(/^set system syslog user \* any emergency/) }
-    its('stdout.strip') { should match(/^set system syslog user \* daemon critical/) }
-    its('stdout.strip') { should match(/^set system syslog user \* daemon alert/) }
+  # describe command('show configuration system syslog | display set | match "user \\*"') do
+  #   its('stdout.strip') { should match(/^set system syslog user \* any emergency/) }
+  #   its('stdout.strip') { should match(/^set system syslog user \* daemon critical/) }
+  #   its('stdout.strip') { should match(/^set system syslog user \* daemon alert/) }
+  # end
+
+  # Run a Junos CLI command to get the syslog config in set-style format
+  cmd = command('show configuration system syslog | display set')
+
+  # Get the command output, stripping extra newlines or whitespace
+  output = cmd.stdout.strip
+
+  # Describe block to verify that syslog messages are being sent to all users ("users *") for key severities
+  describe 'Syslog user * configuration' do
+    # Check that emergency messages are sent to all users (most critical)
+    it 'should include any emergency logging' do
+      expect(output).to match(/^set system syslog users \* any emergency/)
+    end
+
+    # Check that daemon-level critical messages are also forwarded
+    it 'should include daemon critical logging' do
+      expect(output).to match(/^set system syslog users \* daemon critical/)
+    end
+
+    # Check that daemon-level alert messages are also sent
+    it 'should include daemon alert logging' do
+      expect(output).to match(/^set system syslog users \* daemon alert/)
+    end
   end
 end

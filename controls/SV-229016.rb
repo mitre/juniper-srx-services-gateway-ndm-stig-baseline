@@ -56,7 +56,7 @@ set system syslog file account-actions change-log any any"
     # ✅ Send change-log events to management console (user sessions)
     it 'should send change-log alerts to the management console (users *)' do
       expect(syslog_output).to match(
-        /set system syslog users \* change-log #{min_severity}/
+        /set system syslog users \* change-log #{syslog_minimum_severity}/
       )
     end
 
