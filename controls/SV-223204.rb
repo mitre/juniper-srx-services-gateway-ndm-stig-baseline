@@ -25,35 +25,36 @@ set system max-configuration-rollbacks <organization-defined number>'
   tag nist: ['CM-6 b']
 
   # Load the minimum required rollback count from InSpec inputs
-  min_rollbacks = input('min_rollback_configs', value: 5)
+  min_rollbacks = input('min_rollback_configs', value: 10)
 
-
+  # Run the command to get the rollback configuration
   cmd = command('show configuration system max-configuration-rollbacks')
   output = cmd.stdout.strip
 
-  describe 'Syslog rollback command' do
+  # Validate that the command executed successfully
+  describe 'Max configuration rollbacks command' do
     it 'should execute successfully' do
       expect(cmd.exit_status).to eq 0
     end
   end
 
-  if output.empty?
-    # ❌ Setting not found: Junos defaults to 0, which is non-compliant
-    describe 'Rollback setting missing' do
-      it 'should explicitly configure max-configuration-rollbacks' do
-        fail 'max-configuration-rollbacks is not set; default is 0, which is non-compliant.'
-      end
+  # If the setting is not configured (empty output), assert non-compliance using `be_empty`
+  describe 'max-configuration-rollbacks setting presence' do
+    it 'should be explicitly configured' do
+      expect(output).not_to be_empty
     end
-  else
-    # ✅ Setting exists, check the value
+  end
+
+  # Only run this test if the setting was present (avoid comparing nil)
+  unless output.empty?
     rollback_count = output.to_i
 
-    describe 'Configured rollback count' do
+    describe 'Configured rollback count value' do
       it "should be greater than or equal to #{min_rollbacks}" do
         expect(rollback_count).to be >= min_rollbacks
       end
     end
-  end  
+  end
   # # Run the command to get the configured max rollback count
   # cmd = command('show configuration system max-configuration-rollbacks')
 
