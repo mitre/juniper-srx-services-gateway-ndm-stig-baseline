@@ -59,7 +59,7 @@ inputs:
   - name: authorized_software_install_roles
     description: 'List of authorized roles that include software install permission'
     type: array
-    value:  ['super-user', 'install-admin']
+    value:  ['super-user', 'superuser']
     required: true
 
   # SV-223204

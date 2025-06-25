@@ -31,22 +31,22 @@ Use the delete command or retype the command to remove the permission "Maintenan
   tag nist: ['CM-11 (2)', 'CM-11 (2)']
 
   # Check that roles exist with restricted permissions
-  describe command('show configuration system login class') do
-    its('stdout') { should match(/class\s+.*\{[^}]*permissions.*software-installation/) }
+  describe command('show configuration | display set | match "system login class"') do
+    its('stdout') { should match(/set system login class \S+ permissions .*software-installation/) }
   end
 
   # Check users assigned only authorized classes (roles) that include software install permission
   authorized_roles = input('authorized_software_install_roles')
 
   authorized_roles.each do |role|
-    describe command("show configuration system login class #{role}") do
+    describe command("show configuration system login | display set | match \"class #{role}\"") do
       its('stdout') { should match(/permissions.*software-installation/) }
     end
   end
 
   # Check that no users have classes (roles) other than authorized_roles for software install
   # This requires listing users and their classes
-  users_output = command('show configuration system login user | display set').stdout
+  users_output = command('show configuration | display set | match "system login user"').stdout.strip
 
   users_output.scan(/^set system login user (\S+) class (\S+)$/).each do |user, user_class|
     describe "User #{user} assigned to class #{user_class}" do
@@ -59,5 +59,5 @@ Use the delete command or retype the command to remove the permission "Maintenan
         end
       end
     end
-  end  
+  end
 end
