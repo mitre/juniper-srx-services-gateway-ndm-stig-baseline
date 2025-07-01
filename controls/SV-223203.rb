@@ -34,6 +34,7 @@ set interfaces lo0 unit 0 family inet6 address 2100::250/128'
 
   if lo0_config.empty?
     # Skip control if lo0 is not configured at all
+    impact 0.0
     describe 'Loopback interface lo0' do
       skip 'lo0 is not configured — skipping all filter checks.'
     end

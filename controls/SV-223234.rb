@@ -29,7 +29,11 @@ Note: Juniper Networks recommends a best practice of 4 for the rate limit; howev
   tag cci: ['CCI-002385']
   tag nist: ['SC-5 a']
 
-  describe command('show configuration system | display set | match rate-limit') do
-    its('stdout.strip') { should match(/^set system services ssh rate-limit #{input('ssh_rate_limit').to_s}/) }
+
+  # Use input with a fallback to 4 if not defined
+  ssh_rate_limit = input('ssh_rate_limit', value: 4)
+
+  describe command('show configuration system services ssh | display set | match rate-limit') do
+    its('stdout.strip') { should match(/^set system services ssh rate-limit #{ssh_rate_limit}$/) }
   end
 end

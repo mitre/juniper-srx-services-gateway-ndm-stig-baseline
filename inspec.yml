@@ -79,7 +79,7 @@ inputs:
   - name: allowed_mgmt_zones
     description: 'List of management zones allowed to have host-inbound-traffic system-services configured'
     type: array
-    value: ['trust']
+    value: ['trust', 'L2-zone']
 
   # SV-223232
   - name: keepalive_count

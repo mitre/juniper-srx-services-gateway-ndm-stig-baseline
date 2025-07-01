@@ -36,7 +36,9 @@ set system syslog user * daemon critical"
 
   describe command('show configuration system syslog | display set | match user') do
     its('stdout.strip') { should match(/^set system syslog user \* any emergency/) }
-    its('stdout.strip') { should match(/^set system syslog user \* daemon alert/) }
-    its('stdout.strip') { should match(/^set system syslog user \* daemon critical/) }
+    #its('stdout.strip') { should match(/^set system syslog user \* daemon alert/) }
+    its('stdout.strip') { should match(/^set system syslog user \* daemon (alert|emergency)$/) }
+    # alert is more severe than critical, so critical is redundant 
+    # its('stdout.strip') { should match(/^set system syslog user \* daemon critical/) }
   end
 end

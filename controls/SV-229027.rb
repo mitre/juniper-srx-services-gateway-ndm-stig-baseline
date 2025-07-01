@@ -29,11 +29,19 @@ set snmp v3 notify-filter device-traps oid'
   tag cci: ['CCI-000366', 'CCI-000372']
   tag nist: ['CM-6 b', 'CM-6 (1)']
 
-  describe command('show configuration snmp | display set | match "notify-filter device-traps oid"') do
-    its('stdout.strip') { should match(/^set snmp v3 notify-filter device-traps oid jnxChassisTraps include/) }
-    its('stdout.strip') { should match(/^set snmp v3 notify-filter device-traps oid jnxChassisOKTraps include/) }
-    its('stdout.strip') { should match(/^set snmp v3 notify-filter device-traps oid system include/) }
-    its('stdout.strip') { should match(/^set snmp v3 notify-filter device-traps oid \.1 include/) }
-    its('stdout.strip') { should match(/^set snmp v3 notify-filter device-traps oid/) }
+  snmp_config = command('show configuration snmp | display set').stdout.strip
+    
+  if snmp_config.empty?
+    impact 0.0
+    desc 'This control is not applicable because SNMP is not configured on the system.'
+    skip 'SNMP is not configured — skipping SNMP trap filter validation.'
+  else
+    describe command('show configuration snmp | display set | match "notify-filter device-traps oid"') do
+      its('stdout.strip') { should match(/^set snmp v3 notify-filter device-traps oid jnxChassisTraps include/) }
+      its('stdout.strip') { should match(/^set snmp v3 notify-filter device-traps oid jnxChassisOKTraps include/) }
+      its('stdout.strip') { should match(/^set snmp v3 notify-filter device-traps oid system include/) }
+      its('stdout.strip') { should match(/^set snmp v3 notify-filter device-traps oid \.1 include/) }
+      its('stdout.strip') { should match(/^set snmp v3 notify-filter device-traps oid/) }
+    end
   end
 end

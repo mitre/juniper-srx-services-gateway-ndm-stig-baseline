@@ -32,26 +32,53 @@ set cli idle-timeout 10'
   tag cci: ['CCI-001133']
   tag nist: ['SC-10']
 
-# Check CLI idle timeout
-  idle_timeout = command('show configuration system services | display set | match idle-timeout').stdout.strip
+
+  # How to see which users are assigned to which classes
+  # show configuration system login | display set | match class
+
+  # To Verify idle-timeout in Junos 22.x (correct way):
+  # show configuration | display set | match "idle-timeout"
 
 
-  describe 'CLI idle-timeout setting' do
-    it 'should be set to 600 seconds' do
-      expect(idle_timeout).to match(/^set system services idle-timeout 600$/)
+  # Get all user-related configuration lines
+  config_lines = command('show configuration system login | display set | match "^set system login user"').stdout.lines.map(&:strip)
+
+  # Group configuration lines by username
+  users = {}
+  config_lines.each do |line|
+    if line =~ /^set system login user (\S+)/
+      user = Regexp.last_match(1)
+      users[user] ||= []
+      users[user] << line
     end
   end
 
-  # Get all users and their assigned classes
-  users_config = command('show configuration system login user | display set').stdout.lines.map(&:strip)
-  users_config = command('show configuration system login | display set | match "^set system login user"').stdout.lines.map(&:strip)
+  used_classes = Set.new
 
+  # Check each user has a class assigned
+  users.each do |user, lines|
+    class_line = lines.find { |l| l.include?('class ') }
 
-  describe 'All local users should have an assigned login class' do
-    users_config.each do |line|
-      it "User defined in line: #{line}" do
-        # Example line: set system login user admin class operator
-        expect(line).to match(/^set system login user \S+ class \S+/)
+    describe "User #{user}" do
+      it 'should have a login class assigned' do
+        expect(class_line).not_to be_nil, "User '#{user}' is missing a login class assignment."
+      end
+    end
+
+    if class_line
+      class_name = class_line.match(/class\s+(\S+)/)&.captures&.first
+      used_classes << class_name if class_name
+    end
+  end
+
+  # Check each used class has idle-timeout set to 600
+  used_classes.each do |klass|
+    timeout_line = command("show configuration system login class #{klass} | display set | match idle-timeout").stdout.strip
+
+    describe "Login class '#{klass}' idle-timeout setting" do
+      it 'should be set to 600 seconds' do
+        expect(timeout_line).to match(/^set system login class #{klass} idle-timeout 600$/),
+          "Login class '#{klass}' is missing 'idle-timeout 600' configuration. Output: '#{timeout_line}'"
       end
     end
   end
