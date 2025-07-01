@@ -156,11 +156,13 @@ inputs:
   - name: aaa_server_address
     description: 'Address of the AAA server for centralized authentication (TACACS+ or RADIUS)'
     type: string
+    value: ''
 
   # SV-229024
   - name: aaa_shared_secret
     description: 'Shared secret used for AAA server authentication'
     type: string
+    value: ''
 
   # SV-229029
   - name: authorized_classes
