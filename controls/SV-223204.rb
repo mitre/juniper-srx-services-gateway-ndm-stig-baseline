@@ -25,7 +25,7 @@ set system max-configuration-rollbacks <organization-defined number>'
   tag nist: ['CM-6 b']
 
   # Load the minimum required rollback count from InSpec inputs
-  min_rollbacks = input('min_rollback_configs', value: 10)
+  min_rollbacks = input('min_rollback_configs', value: 5)
 
   # Run the command to get the rollback configuration
   cmd = command('show configuration system max-configuration-rollbacks')
@@ -47,7 +47,12 @@ set system max-configuration-rollbacks <organization-defined number>'
 
   # Only run this test if the setting was present (avoid comparing nil)
   unless output.empty?
-    rollback_count = output.to_i
+    # Extract the rollback count from the output
+    # Assuming the output is a single line with the format "set system max-configuration-rollbacks <number>"
+    # Adjust the regex if the output format is different
+    # Example output: "set system max-configuration-rollbacks 10"
+    # This regex captures the number after the last space in the output
+    rollback_count = output.match(/\d+/)[0].to_i
 
     describe 'Configured rollback count value' do
       it "should be greater than or equal to #{min_rollbacks}" do

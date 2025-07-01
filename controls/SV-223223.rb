@@ -24,7 +24,7 @@ set system login password format sha256'
   tag cci: ['CCI-000197']
   tag nist: ['IA-5 (1) (c)']
 
-  describe command('show configuration system login password | display set | match password format') do
-    its('stdout.strip') { should match(/^set system login password format sha(256|512)/) }
+  describe command('show configuration system login password | display set') do
+    its('stdout') { should match(/^set system login password format (sha256|sha512)$/) }
   end
 end

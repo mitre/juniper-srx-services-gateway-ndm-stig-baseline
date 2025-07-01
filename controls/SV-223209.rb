@@ -58,7 +58,7 @@ delete set system services ssh protocol-version v1'
     end
 
     it 'should not include web-management http' do
-      expect(services_output).not_to match(/^set system services web-management http/)
+      expect(services_output).not_to match(/^set system services web-management http\b/)
     end
   end
 
@@ -68,7 +68,7 @@ delete set system services ssh protocol-version v1'
     end
 
     it 'should include web-management https' do
-      expect(services_output).to match(/^set system services web-management https/)
+      expect(services_output).to match(/^set system services web-management https\b/)
     end
   end  
 end

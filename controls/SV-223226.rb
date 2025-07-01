@@ -38,6 +38,7 @@ security-level privacy notify-view all'
   snmp_config = command('show configuration snmp | display set').stdout.strip
 
   if snmp_config.empty?
+    impact 0.0
     describe 'SNMP configuration' do
       skip 'SNMP is not configured — this control is not applicable.'
     end

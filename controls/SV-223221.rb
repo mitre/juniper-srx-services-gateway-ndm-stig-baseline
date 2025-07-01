@@ -26,7 +26,9 @@ set system login password minimum -numerics to 1'
   tag cci: ['CCI-004066', 'CCI-000194']
   tag nist: ['IA-5 (1) (h)', 'IA-5 (1) (a)']
 
-  describe command('show configuration system login password | display set | match minimum -numerics') do
-    its('stdout.strip') { should match(/^set system login password minimum -numerics to\s+[1-9]\d*/) }
+  # Check the minimum numerics setting for local password complexity
+  # The command 'show configuration system login password' will show the current password policy settings.
+  describe command('show configuration system login password | display set | match minimum-numerics') do
+    its('stdout.strip') { should match(/^set system login password minimum-numerics\s+[1-9]\d*/) }
   end
 end

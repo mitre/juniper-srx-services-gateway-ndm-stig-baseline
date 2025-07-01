@@ -33,6 +33,7 @@ set snmp v3 usm local-engine user <NAME> authentication-sha256'
   snmp_config = command('show configuration snmp | display set').stdout.strip
 
   if snmp_config.empty?
+    impact 0.0
     # No SNMP configuration present — this is not a finding
     describe 'SNMP configuration' do
       skip 'SNMP is not configured — this control is not applicable.'

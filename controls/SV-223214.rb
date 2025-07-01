@@ -24,7 +24,11 @@ set system services ssh no-tcp-forwarding'
   tag cci: ['CCI-000382']
   tag nist: ['CM-7 b']
 
-  describe command('show configuration system services ssh | display set | match no-tcp-forwarding') do
-    its('stdout.strip') { should match(/^set system services ssh no-tcp-forwarding/) }
+  # Juniper device does not support no-tcp-forwarding, but instead uses the
+  # presence or absence of allow-tcp-forwarding to control SSH port forwarding.
+  describe command('show configuration system services ssh | display set') do
+    it 'should not allow TCP forwarding' do
+      expect(subject.stdout).not_to match(/^set system services ssh allow-tcp-forwarding/)
+    end
   end
 end
