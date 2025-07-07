@@ -44,6 +44,7 @@ set chassis cluster redundancy-group 1 interface-monitor ge-6/0/2 weight 255'
 
   if !redundancy_required
     describe 'Redundancy policy' do
+      impact 0.0
       skip 'Service redundancy is not required by organizational policy — control not applicable.'
     end
   else

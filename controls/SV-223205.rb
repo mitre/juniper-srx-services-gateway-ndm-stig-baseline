@@ -35,21 +35,24 @@ set system ntp source-address <MGT-IP-Address>'
   # Get the list of configured NTP servers from Junos config
   cmd = command('show configuration system ntp | display set | match "server"')
 
-  # If no NTP servers configured, skip further testing
-  if cmd.stdout.strip.empty?
-    describe 'NTP server configuration' do
-      skip 'No NTP servers configured; skipping NTP server configuration checks.'
+  # Fail immediately if no NTP servers are configured
+  describe 'NTP server configuration presence' do
+    it 'should have at least one NTP server configured' do
+      expect(cmd.stdout.strip).not_to be_empty, 
+        'No NTP servers are configured on the system.'
     end
-  else
-    # Verify command ran successfully and output is not empty
-    describe 'NTP server configuration' do
-      it 'should have at least one server configured' do
+  end
+
+  # Proceed with further checks only if servers exist
+  unless cmd.stdout.strip.empty?
+    # Verify command ran successfully
+    describe 'NTP configuration command' do
+      it 'should execute successfully' do
         expect(cmd.exit_status).to eq 0
-        expect(cmd.stdout).not_to be_empty
       end
     end
 
-    # Extract the lines that actually configure NTP servers
+    # Parse configured servers - Extract the lines that actually configure NTP servers
     ntp_servers = cmd.stdout.lines.select { |line| line.match?(/^set system ntp server \S+/) }
 
     # Check that the count of configured NTP servers meets or exceeds minimum required
@@ -59,6 +62,4 @@ set system ntp source-address <MGT-IP-Address>'
       end
     end
   end
-
-
 end
