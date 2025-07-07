@@ -43,8 +43,8 @@ set chassis cluster redundancy-group 1 interface-monitor ge-6/0/2 weight 255'
   redundancy_required = input('redundancy_required', value: true, description: 'Whether service redundancy is required by organizational policy')
 
   if !redundancy_required
+    impact 0.0
     describe 'Redundancy policy' do
-      impact 0.0
       skip 'Service redundancy is not required by organizational policy — control not applicable.'
     end
   else
