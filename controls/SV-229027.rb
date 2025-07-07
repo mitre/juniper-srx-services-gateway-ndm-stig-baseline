@@ -34,7 +34,9 @@ set snmp v3 notify-filter device-traps oid'
   if snmp_config.empty?
     impact 0.0
     desc 'This control is not applicable because SNMP is not configured on the system.'
-    skip 'SNMP is not configured — skipping SNMP trap filter validation.'
+    describe 'SNMP Configuration' do
+      skip 'SNMP is not configured — skipping SNMP trap filter validation.'
+    end
   else
     describe command('show configuration snmp | display set | match "notify-filter device-traps oid"') do
       its('stdout.strip') { should match(/^set snmp v3 notify-filter device-traps oid jnxChassisTraps include/) }

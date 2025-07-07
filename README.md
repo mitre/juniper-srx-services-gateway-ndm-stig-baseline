@@ -9,7 +9,7 @@ requirements.
 - Benchmark Version: **Version 3 Release 3 (V3R3)**
 
 > [!NOTE]
-> A security assessment of the Juniper SRX firewall consist of a security review of both the Routing Engine (RE) and Packet Forwarding Engine (PFE) services functions. The minimum required documents are, the Juniper SRX Network Device Management (NDM) (this profile), and the [Juniper SRX Application Layer Gateway (ALG)](https://github.com/mitre/juniper-srx-services-gateway-alg-stig-baseline/blob/main/README.md?plain=1) STIGs.
+> A security assessment of the Juniper SRX firewall consist of a security review of both the Routing Engine (RE) and Packet Forwarding Engine (PFE) services functions. The minimum required documents are, the Juniper SRX Network Device Management (NDM) (this profile), and the [Juniper SRX Application Layer Gateway (ALG)](https://github.com/mitre/juniper-srx-services-gateway-alg-stig-baseline/tree/main) STIGs.
 
 This profile was developed to reduce the time it takes to perform a security checks based upon the
 STIG Guidance from the Defense Information Systems Agency (DISA) in partnership between the DISA Services Directorate (SD) and the DISA Risk Management Executive (RME) office.
@@ -275,7 +275,7 @@ bundle exec [inspec or cinc-auditor] archive juniper-srx-services-gateway-ndm-st
 bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t juniper://admin@device.example.com --password 'secret' --reporter=cli json:<your_results_file.json>
 
 # Using `juniper` transport with bastion host
-bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t juniper://admin@device.example.com --password 'secret' --bastion-host='jump-host-name' --reporter=cli json:<your_results_file.json>     
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t juniper://admin@device.example.com --password 'secret' --bastion-host='jump-host-name' --reporter=cli json:<your_results_file.json>
 ```
 
 [top](#table-of-contents)

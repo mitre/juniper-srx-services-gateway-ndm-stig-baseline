@@ -33,7 +33,7 @@ set system syslog user * daemon alert"
   tag nist: ['CM-6 b', 'CM-6 (1)']
 
   # Run CLI command to get the syslog config in set-style format
-  cmd = command('show configuration system syslog | display set | match "user \*"')
+  cmd = command('show configuration system syslog | display set | match "user *"')
 
   # Get the command output, stripping extra newlines or whitespace
   output = cmd.stdout.strip
