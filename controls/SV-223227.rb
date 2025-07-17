@@ -45,6 +45,6 @@ set system services ssh key-exchange ecdh-sha2-nistp256'
     its('stdout.strip') { should match(/^set system services ssh macs hmac-sha2-256/) }
     its('stdout.strip') { should match(/^set system services ssh key-exchange ecdh-sha2-nistp521/) }
     its('stdout.strip') { should match(/^set system services ssh key-exchange ecdh-sha2-nistp384/) }
-    its('stdout.strip') { should match(/^set system services ssh key-exchange ecdh-sha2-nistp256'/) }
+    its('stdout.strip') { should match(/^set system services ssh key-exchange ecdh-sha2-nistp256/) }
   end
 end

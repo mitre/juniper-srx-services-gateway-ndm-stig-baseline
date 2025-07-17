@@ -37,13 +37,22 @@ Note: DOD policy is that redundant AAA servers are required to mitigate the risk
   tag cci: ['CCI-000366', 'CCI-000015', 'CCI-002132']
   tag nist: ['CM-6 b', 'AC-2 (1)', 'AC-2 (4)']
 
-  describe.one do
-    describe command('show configuration system tacplus | display set') do
-      its('stdout') { should match(/set system tacplus-server address #{Regexp.escape(input('aaa_server_address'))} port 1812 secret #{Regexp.escape(input('aaa_shared_secret'))}/) }
-    end
+  use_tacacs_or_radius = input('use_tacacs_or_radius', value: true)
 
-    describe command('show configuration system radius | display set') do
-      its('stdout') { should match(/set system radius-server address #{Regexp.escape(input('aaa_server_address'))} port 1812 secret #{Regexp.escape(input('aaa_shared_secret'))}/) }
+  if !use_tacacs_or_radius
+    impact 0.0
+    describe 'Centralized authentication check' do
+      skip 'Control not applicable because use_tacacs_or_radius input is set to false.'
+    end
+  else
+    describe.one do
+      describe command('show configuration system tacplus-server | display set') do
+        its('stdout') { should match(/set system tacplus-server address #{Regexp.escape(input('aaa_server_address'))} port 1812 secret #{Regexp.escape(input('aaa_shared_secret'))}/) }
+      end
+
+      describe command('show configuration system radius-server | display set') do
+        its('stdout') { should match(/set system radius-server address #{Regexp.escape(input('aaa_server_address'))} port 1812 secret #{Regexp.escape(input('aaa_shared_secret'))}/) }
+      end
     end
   end
 end
