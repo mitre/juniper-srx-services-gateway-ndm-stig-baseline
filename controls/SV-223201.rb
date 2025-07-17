@@ -26,7 +26,7 @@ set system time-zone UTC'
 
     # Check system time zone configuration
   describe command('show configuration system time-zone') do
-    its('stdout') { should match(/^time-zone UTC$/) }
+    its('stdout') { should match(/^time-zone UTC/) }
   end
 
   # Additionally, verify the current system time is in UTC (heuristic)

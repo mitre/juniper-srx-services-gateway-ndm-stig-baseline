@@ -21,7 +21,7 @@ If the Junos version installed is not 12.1 X46 or later, this is a finding.'
   tag nist: ['CM-6 b']
 
   # Input: minimum required Junos version (e.g., '12.1X46', '15.1X49')
-  minimum_version = input('min_junos_version')
+  minimum_version_str = input('min_junos_version')
 
   # Run `show version` to get the current version
   version_output = command('show version').stdout
@@ -35,27 +35,38 @@ If the Junos version installed is not 12.1 X46 or later, this is a finding.'
     end
   end
 
+  
   if match
-    current_version = match[1]
-    describe "Detected Junos version: #{current_version}" do
-      it "should be equal to or newer than #{minimum_version}" do
-        # Compare versions using a helper function
-        def version_to_tuple(ver)
-          # Handles both numbered and lettered (e.g., X46) Junos formats
-          if ver =~ /^(\d+)\.(\d+)(X(\d+))?/
-            major = Regexp.last_match(1).to_i
-            minor = Regexp.last_match(2).to_i
-            xtrain = Regexp.last_match(4)&.to_i || 0
-            [major, minor, xtrain]
-          else
-            [0, 0, 0]
-          end
-        end
+    current_version_str = match[1]
 
-        expected = version_to_tuple(minimum_version)
-        actual   = version_to_tuple(current_version)
+    # Parse both current and minimum versions into 4-element tuples [major, minor, build, patch]
+    parse = lambda do |ver|
+      if ver =~ /^(\d+)\.(\d+)[XR](\d+)(?:\.(\d+))?/
+        [
+          Regexp.last_match(1).to_i,
+          Regexp.last_match(2).to_i,
+          Regexp.last_match(3).to_i,
+          Regexp.last_match(4) ? Regexp.last_match(4).to_i : 0
+        ]
+      else
+        [0, 0, 0, 0]
+      end
+    end
 
-        expect(actual).to be >= expected
+    current = parse.call(current_version_str)
+    minimum = parse.call(minimum_version_str)
+
+    # Inline tuple comparison
+    result = (
+      current[0] > minimum[0] ||
+      (current[0] == minimum[0] && current[1] > minimum[1]) ||
+      (current[0] == minimum[0] && current[1] == minimum[1] && current[2] > minimum[2]) ||
+      (current[0] == minimum[0] && current[1] == minimum[1] && current[2] == minimum[2] && current[3] >= minimum[3])
+    )
+
+    describe "Detected Junos version: #{current_version_str}" do
+      it "should be equal to or newer than #{minimum_version_str}" do
+        expect(result).to eq(true)
       end
     end
   end

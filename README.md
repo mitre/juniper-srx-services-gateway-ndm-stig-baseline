@@ -1,4 +1,4 @@
-# Juniper SRX Services Gateway NDM Security Technical Implementation Guide
+# Juniper SRX Services Gateway Network Device Management (NDM) Security Technical Implementation Guide
 
 This InSpec Profile was created to facilitate testing and auditing of `Juniper SRX Services Gateway NDM`
 infrastructure and applications when validating compliancy with [Department of Defense (DoD) STIG](https://public.cyber.mil/stigs/)
@@ -25,7 +25,7 @@ and Continuous Authority to Operate (cATO) processes.
 Table of Contents
 =================
 
-- [Juniper SRX Services Gateway NDM Security Technical Implementation Guide](#juniper-srx-services-gateway-ndm-security-technical-implementation-guide)
+- [Juniper SRX Services Gateway Network Device Management (NDM) Security Technical Implementation Guide](#juniper-srx-services-gateway-network-device-management-ndm-security-technical-implementation-guide)
 - [Table of Contents](#table-of-contents)
   - [Benchmark Information](#benchmark-information)
   - [Getting Started](#getting-started)
