@@ -164,6 +164,12 @@ inputs:
     type: string
     value: ''
 
+  # SV-229025
+  - name: use_tacacs_or_radius
+    description: 'Whether to use TACACS+ or RADIUS for centralized authentication'
+    type: boolean
+    value: false
+
   # SV-229029
   - name: authorized_classes
     description: 'List of login classes authorized to view and clear logs'

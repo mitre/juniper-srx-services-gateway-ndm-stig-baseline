@@ -37,7 +37,7 @@ Note: DOD policy is that redundant AAA servers are required to mitigate the risk
   tag cci: ['CCI-000366', 'CCI-000015', 'CCI-002132']
   tag nist: ['CM-6 b', 'AC-2 (1)', 'AC-2 (4)']
 
-  use_tacacs_or_radius = input('use_tacacs_or_radius', value: true)
+  use_tacacs_or_radius = input('use_tacacs_or_radius')
 
   if !use_tacacs_or_radius
     impact 0.0
