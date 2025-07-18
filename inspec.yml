@@ -70,10 +70,16 @@ inputs:
     required: true
   
   # SV-223205
-  - name: min_ntp_servers
-    description: 'Minimum number of NTP servers to configure'
-    type: Numeric
-    value: 0
+  - name: ntp_server_address
+    description: 'List of NTP servers configured, at least one is needed to pass'
+    type: array
+    value: ['10.1.1.80']
+  
+  # SV-223206
+  - name: aaa_servers_configured
+    description: 'Whether AAA servers (TACACS+ or RADIUS) are configured'
+    type: boolean
+    value: false
 
   # SV-223228
   - name: allowed_mgmt_zones

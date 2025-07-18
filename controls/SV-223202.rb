@@ -30,32 +30,31 @@ Use the delete command or retype the command to remove the permission "Maintenan
   tag cci: ['CCI-003980', 'CCI-001812']
   tag nist: ['CM-11 (2)', 'CM-11 (2)']
 
-  # Check that roles exist with restricted permissions
-  describe command('show configuration | display set | match "system login class"') do
-    its('stdout') { should match(/set system login class \S+ permissions .*software-installation/) }
-  end
-
   # Check users assigned only authorized classes (roles) that include software install permission
   authorized_roles = input('authorized_software_install_roles')
 
-  authorized_roles.each do |role|
-    describe command("show configuration system login | display set | match \"class #{role}\"") do
-      its('stdout') { should match(/permissions.*software-installation/) }
-    end
+  # Check if any login class allows software install via 'maintenance' permission
+  describe command('show configuration | display set | match "system login class"') do
+    its('stdout') { should_not match(/set system login class \S+ permissions.*maintenance/) }
   end
 
-  # Check that no users have classes (roles) other than authorized_roles for software install
-  # This requires listing users and their classes
+  # Ensure only authorized classes are used by users with software install ability
   users_output = command('show configuration | display set | match "system login user"').stdout.strip
+  user_class_map = users_output.scan(/^set system login user (\S+) class (\S+)$/)
 
-  users_output.scan(/^set system login user (\S+) class (\S+)$/).each do |user, user_class|
-    describe "User #{user} assigned to class #{user_class}" do
-      it "should have authorized role for software install if software install permitted" do
-        if authorized_roles.include?(user_class)
-          expect(user_class).to be_in authorized_roles
-        else
-          # The user class does not have software install permission - so pass
-          expect(true).to eq(true)
+  user_class_map.each do |user, klass|
+    describe "User '#{user}'" do
+      if authorized_roles.include?(klass)
+        it "is authorized to use role '#{klass}' for software installation" do
+          expect(klass).to be_in authorized_roles
+        end
+      else
+        class_config = command("show configuration system login class '#{klass}'").stdout
+        describe "Class '#{klass}' used by user '#{user}'" do
+          it 'should not include software install privileges' do
+            expect(class_config).not_to match(/permissions.*maintenance/)
+            expect(class_config).not_to match(/deny-commands.*request system software add/)
+          end
         end
       end
     end

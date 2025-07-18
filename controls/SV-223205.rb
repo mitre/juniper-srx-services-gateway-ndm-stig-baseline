@@ -29,36 +29,39 @@ set system ntp source-address <MGT-IP-Address>'
   tag cci: ['CCI-000366', 'CCI-004928', 'CCI-004922', 'CCI-001893']
   tag nist: ['CM-6 b', 'SC-45 (2) (a)', 'SC-45', 'AU-8 (2)']
 
-  # Minimum number of NTP servers required (e.g., 2)
-  min_ntp_servers = input('min_ntp_servers')
+  # Input value for expected NTP server IP address
+  ntp_servers = input('ntp_server_address')
 
-  # Get the list of configured NTP servers from Junos config
-  cmd = command('show configuration system ntp | display set | match "server"')
-
-  # Fail immediately if no NTP servers are configured
-  describe 'NTP server configuration presence' do
-    it 'should have at least one NTP server configured' do
-      expect(cmd.stdout.strip).not_to be_empty, 
-        'No NTP servers are configured on the system.'
+  # Ensure that at least one NTP server address is provided
+  describe 'NTP server address input' do
+    it 'should contain at least one address' do
+      expect(ntp_servers).to be_an(Array)
+      expect(ntp_servers).not_to be_empty
     end
   end
 
-  # Proceed with further checks only if servers exist
-  unless cmd.stdout.strip.empty?
-    # Verify command ran successfully
-    describe 'NTP configuration command' do
-      it 'should execute successfully' do
-        expect(cmd.exit_status).to eq 0
+  # Proceed only if addresses are provided
+  unless ntp_servers.empty?
+    # Get the device's configured NTP settings
+    config_cmd = command('show configuration system ntp | display set')
+
+    # Get current NTP associations
+    assoc_cmd = command('show ntp associations')
+
+    # Loop through each expected NTP server
+    ntp_servers.each do |server|
+      # Check that server is present in the configuration
+      describe "NTP configuration for server '#{server}'" do
+        it 'should be configured in system ntp settings' do
+          expect(config_cmd.stdout).to match(/set system ntp server #{Regexp.escape(server)}/)
+        end
       end
-    end
 
-    # Parse configured servers - Extract the lines that actually configure NTP servers
-    ntp_servers = cmd.stdout.lines.select { |line| line.match?(/^set system ntp server \S+/) }
-
-    # Check that the count of configured NTP servers meets or exceeds minimum required
-    describe ntp_servers do
-      it "should include at least #{min_ntp_servers} NTP servers" do
-        expect(ntp_servers.count).to be >= min_ntp_servers
+      # Check that server appears in active NTP associations
+      describe "NTP association status for server #{server}" do
+        it 'should appear in ntp associations' do
+          expect(assoc_cmd.stdout).to match(/#{Regexp.escape(server)}/)
+        end
       end
     end
   end
