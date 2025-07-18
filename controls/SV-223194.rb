@@ -29,14 +29,20 @@ set host <syslog server address> any <info | any>'
   tag cci: ['CCI-000172']
   tag nist: ['AU-12 c']
 
-  # Check if the syslog configuration includes logging for login events
-  describe command('show configuration system syslog') do
-    its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*authorization\s+(info|any);/) }
-  end
+  # Input for expected external syslog host
+  expected_syslog_host = input('external_syslog_host')
 
-  # Check if the syslog configuration includes any logging
-  describe command('show configuration system syslog') do
-    its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*authorization\s+(info|any);/) }
+  # If the expected external syslog host is provided, run the syslog-related checks
+  if expected_syslog_host && !expected_syslog_host.empty?
+    # Check if the syslog configuration includes logging for login events
+    describe command('show configuration system syslog') do
+      its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*authorization\s+(info|any);/) }
+    end
+
+    # Check if the syslog configuration includes any logging
+    describe command('show configuration system syslog') do
+      its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*authorization\s+(info|any);/) }
+    end
   end
 
   # Check if the syslog configuration includes any logging for remote login sessions

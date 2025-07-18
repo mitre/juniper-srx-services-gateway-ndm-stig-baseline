@@ -45,7 +45,7 @@ set system syslog console any any'
     let(:stdout) { subject.stdout }
 
     it 'should log configuration changes' do
-      expect(stdout).to match(/set system syslog .* change-log info/)
+      expect(stdout).to match(/set system syslog .* change-log (info|any)/)
     end
 
     it 'should log privileged commands' do

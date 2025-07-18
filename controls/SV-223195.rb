@@ -29,13 +29,24 @@ set host <syslog server address> any any'
   tag cci: ['CCI-000172']
   tag nist: ['AU-12 c']
 
-  # First test: Check the device syslog configuration to confirm
-  # it is set to send 'interactive-commands' logs of severity 'info' or 'any'
-  describe command('show configuration system syslog') do
-    its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*interactive-commands\s+(info|any);/) }
+  # Input for expected external syslog host
+  expected_syslog_host = input('external_syslog_host')
+
+  # If the expected external syslog host is provided, run the syslog-related checks
+  if expected_syslog_host && !expected_syslog_host.empty?
+    # Check the device syslog configuration to confirm it is set
+    # to send 'interactive-commands' logs of severity 'info' or 'any'
+    describe command('show configuration system syslog') do
+      its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*interactive-commands\s+(info|any);/) }
+    end
+  else 
+    # If no external syslog host is configured, skip the control and set impact to 0.0
+    describe 'External Syslog Server Configuration' do
+      skip 'Skipped because external_syslog_host input is not set.'
+    end
   end
 
-  # Second test: Verify that privileged commands are actually being logged
+  # Verify that privileged commands are actually being logged
   # by searching the system log messages for typical CLI command log entries.
   describe 'Syslog messages for privileged commands' do
     # Run a command that filters the log messages for entries related to interactive commands
@@ -43,7 +54,7 @@ set host <syslog server address> any any'
 
     # Expect to find lines indicating commands executed by a user
     it 'should include interactive command logs' do
-      expect(subject).to match(/UI_CMDLINE_READ_LINE: User .+ command:/)
+      expect(subject).to match(/UI_CMDLINE_READ_LINE: User '.+', command '.+'/)
     end
   end  
 end

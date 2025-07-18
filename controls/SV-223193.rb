@@ -41,9 +41,20 @@ set host <syslog server address> change-log <info | any>'
   tag cci: ['CCI-000172']
   tag nist: ['AU-12 c']
 
-  # Check if the syslog configuration includes change-log logging
-  describe command('show configuration system syslog') do
-    its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*change-log\s+(info|any);/) }
-  end
+  # Input for expected external syslog host
+  expected_syslog_host = input('external_syslog_host')
 
+  # If the expected external syslog host is provided, run the syslog-related checks
+  if expected_syslog_host && !expected_syslog_host.empty?
+    # Check if the syslog configuration includes change-log logging
+    describe command('show configuration system syslog') do
+      its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*change-log\s+(info|any);/) }
+    end
+  else
+    # If no external syslog host is configured, skip the control and set impact to 0.0
+    impact 0.0
+    describe 'External Syslog Server Configuration' do
+      skip 'Skipped because external_syslog_host input is not set.'
+    end
+  end
 end

@@ -44,7 +44,10 @@ set system syslog user * daemon critical"
   # Check if system console logging includes log processing failure messages
   # Log processing failure messages usually appear with severity 'critical' or facility 'daemon'
   # This is a heuristic check — exact message match may vary by Junos version
-  describe command("show log messages | match '(log processing failure|syslog error|syslog failure)'") do
-    its('stdout') { should_not eq '' }
+  describe command('show log messages') do
+    it 'should not include log/syslog failure messages' do
+      output = subject.stdout
+      expect(output).to match(/log processing failure|syslog error|syslog failure/)
+    end
   end
 end

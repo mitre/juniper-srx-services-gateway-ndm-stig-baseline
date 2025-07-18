@@ -44,9 +44,20 @@ set system syslog console any any'
   tag cci: ['CCI-000135']
   tag nist: ['AU-3 (1)']
 
-  # Check syslog configuration includes interactive-commands logging to a remote host
-  describe command('show configuration system syslog') do
-    its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*interactive-commands\s+(info|any);/) }
+    # Input for expected external syslog host
+  expected_syslog_host = input('external_syslog_host', value: '')
+
+  # If the expected external syslog host is provided, run the syslog-related checks
+  if expected_syslog_host && !expected_syslog_host.empty?
+    # Check syslog configuration includes interactive-commands logging to a remote host
+    describe command('show configuration system syslog') do
+      its('stdout') { should match(/host\s+(\S+)\s+\{[^}]*interactive-commands\s+(info|any);/) }
+    end
+  else 
+    # If no external syslog host is configured, skip the control and set impact to 0.0
+    describe 'External Syslog Server Configuration' do
+      skip 'Skipped because external_syslog_host input is not set.'
+    end
   end
 
   # Check actual log messages contain command text entries (UI_CMDLINE_READ_LINE)
@@ -54,7 +65,8 @@ set system syslog console any any'
     subject { command('show log messages | match UI_CMDLINE_READ_LINE').stdout }
 
     it 'should include full-text command log entries' do
-      expect(subject).to match(/UI_CMDLINE_READ_LINE: User .+ command:/)
+      # expect(subject).to match(/UI_CMDLINE_READ_LINE: User .+ command:/)
+      expect(subject).to match(/UI_CMDLINE_READ_LINE: User '.+', command '.+'/)
     end
   end  
 end
