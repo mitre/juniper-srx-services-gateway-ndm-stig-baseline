@@ -40,7 +40,7 @@ inputs:
   - name: documented_users
     description: 'List of administrator and users with access to all commands'
     type: array
-    value: []
+    value: ['']
     required: true
 
   # SV-223198

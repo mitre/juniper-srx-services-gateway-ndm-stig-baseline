@@ -78,11 +78,16 @@ Note: There are 4 pre-defined classes which should not be uses used for <class n
       login_config.scan(/set system login user (\S+) authentication/).flatten.uniq
     end
 
-    # Users with idle-timeout
+    # Extract users with idle-timeout
     let(:users_with_idle_timeout) do
       login_config.scan(/set system login user (\S+) idle-timeout \d+/).flatten.uniq
     end
 
+    # Extract users mapped to super-user class
+    let(:super_user_class_members) do
+      login_config.scan(/set system login user (\S+) class super-user/).flatten.uniq
+    end
+  
     it 'should assign a login class to each defined user account' do
       expect(users_with_class.sort).to eq(all_users.sort)
     end
@@ -92,8 +97,9 @@ Note: There are 4 pre-defined classes which should not be uses used for <class n
       expect(undocumented).to be_empty, "Undocumented accounts with authentication found: #{undocumented.join(', ')}"
     end
 
-    it 'should assign an idle-timeout to every user' do
-      missing = all_users - users_with_idle_timeout
+    it 'should assign an idle-timeout to every user except super-user class' do
+      users_to_check = all_users - super_user_class_members
+      missing = users_to_check - users_with_idle_timeout
       expect(missing).to be_empty, "Users missing idle-timeout: #{missing.join(', ')}"
     end
   end

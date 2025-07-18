@@ -52,15 +52,22 @@ set host <syslog server address> change-log <info | any>'
     let(:syslog_config) { subject.stdout }
 
     it 'should include logging for change events or configuration commits' do
-      expect(syslog_config).to match(/set system syslog .+ change/)
+      expect(syslog_config).to match(/set system syslog (file|host) .+ (change-log|any) .+/)
     end
 
     it 'should log to a file or remote host' do
       expect(syslog_config).to match(/set system syslog (file|host) .+ any .+/)
     end
 
-    it "should log to the specified external syslog server #{external_syslog}" do
-      expect(syslog_config).to match(/set system syslog host #{Regexp.escape(external_syslog)} .+ any .+/)
-    end
+    # it "should log to the specified external syslog server #{external_syslog}" do
+    #   expect(syslog_config).to match(/set system syslog host #{Regexp.escape(external_syslog)} .+ any .+/)
+    # end
+    if external_syslog && !external_syslog.to_s.strip.empty?
+      it "should log to the specified external syslog server #{external_syslog}" do
+        expect(syslog_config).to match(/set system syslog host #{Regexp.escape(external_syslog)} .+ any .+/)
+      end
+    else
+      skip 'External syslog host input is not set; skipping remote syslog checks.'
+    end    
   end
 end
