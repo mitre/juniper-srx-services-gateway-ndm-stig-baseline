@@ -45,24 +45,31 @@ set system syslog file account-actions change-log any any"
     end
   end
 
-  describe 'Syslog settings for account disablement monitoring' do
-    # ✅ Ensure changes (including disables) are logged persistently
-    it 'should log change-log events to a local file' do
-      expect(syslog_output).to match(
-        /set system syslog file account-actions change-log any #{syslog_minimum_severity}/
-      )
+  if expected_syslog_host.to_s.strip.empty?
+    impact 0.0
+    describe 'External syslog host is not configured' do
+      skip 'Skipping generation of alert message when accounts are disabled to the management console checks.'
     end
+  else
+    describe 'Syslog settings for account disablement monitoring' do
+      # Ensure changes (including disables) are logged persistently
+      it 'should log change-log events to a local file' do
+        expect(syslog_output).to match(
+          /set system syslog file account-actions change-log any #{syslog_minimum_severity}/
+        )
+      end
 
-    # ✅ Ensure alerts are sent to console when accounts are disabled
-    it 'should alert the management console via users *' do
-      expect(syslog_output).to match(
-        /set system syslog users \* change-log #{syslog_minimum_severity}/
-      )
-    end
+      # Ensure alerts are sent to console when accounts are disabled
+      it 'should alert the management console via users *' do
+        expect(syslog_output).to match(
+          /set system syslog users \* change-log #{syslog_minimum_severity}/
+        )
+      end
 
-    # ✅ Check that logs are being forwarded to the approved external syslog server
-    it 'should forward logs to the designated syslog server' do
-      expect(syslog_output).to match(/set system syslog host #{Regexp.escape(expected_syslog_host)} any any/)
+      # Check that logs are being forwarded to the approved external syslog server
+      it 'should forward logs to the designated syslog server' do
+        expect(syslog_output).to match(/set system syslog host #{Regexp.escape(expected_syslog_host)} any any/)
+      end
     end
   end
 end

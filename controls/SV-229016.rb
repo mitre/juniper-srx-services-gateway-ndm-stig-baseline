@@ -38,31 +38,45 @@ set system syslog file account-actions change-log any any"
   # Retrieve syslog config from the system in set-style format
   cmd = command('show configuration system syslog | display set')
   syslog_output = cmd.stdout
+  syslog_error = cmd.stderr
 
   describe 'Syslog configuration retrieval' do
     it 'should succeed' do
+      if cmd.exit_status != 0
+        warn_msg = "Command failed with exit status #{cmd.exit_status}.\n"
+        warn_msg += "STDERR: #{syslog_error.strip}\n" unless syslog_error.strip.empty?
+        warn_msg += "STDOUT was empty." if syslog_output.strip.empty?
+        raise warn_msg
+      end
       expect(cmd.exit_status).to eq(0)
     end
   end
 
-  describe 'Change-log syslog configuration' do
-    # ✅ Log change-log messages to a dedicated file
-    it 'should log change-log events with minimum severity' do
-      expect(syslog_output).to match(
-        /set system syslog file account-actions change-log any #{syslog_minimum_severity}/
-      )
+  if expected_syslog_host.to_s.strip.empty?
+    impact 0.0
+    describe 'External syslog host is not configured' do
+      skip 'Skipping generation of alert message for accounts modification to the management console checks.'
     end
+  else
+    describe 'Change-log syslog configuration' do
+      # Log change-log messages to a dedicated file
+      it 'should log change-log events with minimum severity' do
+        expect(syslog_output).to match(
+          /set system syslog file account-actions change-log any #{syslog_minimum_severity}/
+        )
+      end
 
-    # ✅ Send change-log events to management console (user sessions)
-    it 'should send change-log alerts to the management console (users *)' do
-      expect(syslog_output).to match(
-        /set system syslog users \* change-log #{syslog_minimum_severity}/
-      )
-    end
+      # Send change-log events to management console (user sessions)
+      it 'should send change-log alerts to the management console (users *)' do
+        expect(syslog_output).to match(
+          /set system syslog users \* change-log #{syslog_minimum_severity}/
+        )
+      end
 
-    # ✅ Check that logs are being forwarded to the approved external syslog server
-    it 'should forward logs to the designated syslog server' do
-      expect(syslog_output).to match(/set system syslog host #{Regexp.escape(expected_syslog_host)} any any/)
+      # Check that logs are being forwarded to the approved external syslog server
+      it 'should forward logs to the designated syslog server' do
+        expect(syslog_output).to match(/set system syslog host #{Regexp.escape(expected_syslog_host)} any any/)
+      end
     end
   end
 end

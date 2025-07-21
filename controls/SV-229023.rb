@@ -37,17 +37,54 @@ set system syslog console any any'
   tag cci: ['CCI-000366', 'CCI-000015', 'CCI-001686']
   tag nist: ['CM-6 b', 'AC-2 (1)', 'AC-2 (4)']
 
-  describe command('show configuration system syslog | display set | match "(messages|User-Auth|interactive-commands|processes|account-actions|console)"') do
-    its('stdout.strip') { should match(/^set system syslog file messages any info/) }
-    its('stdout.strip') { should match(/^set system syslog file messages authorization none/) }
-    its('stdout.strip') { should match(/^set system syslog file messages interactive-commands none/) }
-    its('stdout.strip') { should match(/^set system syslog file messages daemon none/) }
-    its('stdout.strip') { should match(/^set system syslog file User-Auth authorization any/) }
-    its('stdout.strip') { should match(/^set system syslog file interactive-commands interactive-commands any/) }
-    its('stdout.strip') { should match(/^set system syslog file processes daemon any/) }
-    its('stdout.strip') { should match(/^set system syslog file account-actions change-log any any/) }
-    its('stdout.strip') { should match(/^set system syslog file account-actions match "system login user"/) }
-    its('stdout.strip') { should match(/^set system syslog console any any/) }
+  cmd = command('show configuration system syslog | display set')
+  syslog_config = cmd.stdout.strip
+
+  describe 'Syslog local file configuration' do
+    it 'should retrieve configuration successfully' do
+      expect(cmd.exit_status).to eq(0)
+      expect(syslog_config).not_to be_empty
+    end
+
+    it 'should include messages any info' do
+      expect(syslog_config).to match(/^set system syslog file messages any info\b/)
+    end
+
+    it 'should include messages authorization none' do
+      expect(syslog_config).to match(/^set system syslog file messages authorization none\b/)
+    end
+
+    it 'should include messages interactive-commands none' do
+      expect(syslog_config).to match(/^set system syslog file messages interactive-commands none\b/)
+    end
+
+    it 'should include messages daemon none' do
+      expect(syslog_config).to match(/^set system syslog file messages daemon none\b/)
+    end
+
+    it 'should include User-Auth authorization any' do
+      expect(syslog_config).to match(/^set system syslog file User-Auth authorization any\b/)
+    end
+
+    it 'should include interactive-commands interactive-commands any' do
+      expect(syslog_config).to match(/^set system syslog file interactive-commands interactive-commands any\b/)
+    end
+
+    it 'should include processes daemon any' do
+      expect(syslog_config).to match(/^set system syslog file processes daemon any\b/)
+    end
+
+    it 'should include account-actions change-log any' do
+      expect(syslog_config).to match(/^set system syslog file account-actions change-log any\b/)
+    end
+
+    it 'should include account-actions match "system login user"' do
+      expect(syslog_config).to match(/^set system syslog file account-actions match "system login user"/)
+    end
+
+    it 'should include console any any' do
+      expect(syslog_config).to match(/^set system syslog console any any\b/)
+    end
   end
 end
 

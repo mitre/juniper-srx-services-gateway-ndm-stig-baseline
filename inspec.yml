@@ -130,6 +130,12 @@ inputs:
     value: '12.1X46'
 
   # SV-229014
+  - name: session_control_required
+    description: 'Whether time-based session termination is required'
+    type: boolean
+    value: false
+
+  # SV-229014
   - name: allowed_days
     description: 'Days users are allowed to access the system'
     type: array

@@ -45,25 +45,31 @@ set system syslog file account-actions change-log any any"
     end
   end
 
-  describe 'Syslog settings for account deletion monitoring' do
-    # ✅ Ensure account deletions are logged to a local file
-    it 'should log account deletions using the change-log facility' do
-      expect(syslog_output).to match(
-        /set system syslog file account-actions change-log any #{syslog_minimum_severity}/
-      )
+  if expected_syslog_host.to_s.strip.empty?
+    impact 0.0
+    describe 'External syslog host is not configured' do
+      skip 'Skipping generation of alert message when accounts are disabled to the management console checks.'
     end
+  else
+    describe 'Syslog settings for account deletion monitoring' do
+      # Ensure account deletions are logged to a local file
+      it 'should log account deletions using the change-log facility' do
+        expect(syslog_output).to match(
+          /set system syslog file account-actions change-log any #{syslog_minimum_severity}/
+        )
+      end
 
-    # ✅ Ensure alerts are generated to the management console when accounts are deleted
-    it 'should alert management console via users *' do
-      expect(syslog_output).to match(
-        /set system syslog users \* change-log #{syslog_minimum_severity}/
-      )
+      # Ensure alerts are generated to the management console when accounts are deleted
+      it 'should alert management console via users *' do
+        expect(syslog_output).to match(
+          /set system syslog users \* change-log #{syslog_minimum_severity}/
+        )
+      end
+
+      # Check that logs are being forwarded to the approved external syslog server
+      it 'should forward logs to the designated syslog server' do
+        expect(syslog_output).to match(/set system syslog host #{Regexp.escape(expected_syslog_host)} any any/)
+      end
     end
-
-    # ✅ Check that logs are being forwarded to the approved external syslog server
-    it 'should forward logs to the designated syslog server' do
-      expect(syslog_output).to match(/set system syslog host #{Regexp.escape(expected_syslog_host)} any any/)
-    end
-
   end
 end

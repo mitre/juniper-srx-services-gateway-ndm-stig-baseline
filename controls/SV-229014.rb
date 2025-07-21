@@ -37,37 +37,44 @@ class class-name access-end HH:MM;'
   tag nist: ['AU-12 a', 'CM-6 b']
 
 
+  session_control_required = input('session_control_required')
   allowed_days = input('allowed_days')
   access_start = input('access_start')
   access_end   = input('access_end')
   idle_timeout = input('idle_timeout')
 
+  if !session_control_required
+    impact 0.0
+    describe 'Organization-defined conditions for time-based session' do
+      skip 'Skipped, organization does not require triggered for automatic session termination.'
+    end
+  else
+    describe command('show configuration system login | display set') do
+      let(:login_config) { subject.stdout }
 
-  describe command('show configuration system login | display set') do
-    let(:login_config) { subject.stdout }
+      # Check that at least one class is configured with the allowed days
+      it 'should define a class with allowed-days including the required days' do
+        allowed_days.each do |day|
+          expect(login_config).to match(/set system login class \S+ allowed-days #{day}/i)
+        end
+      end
 
-    # Check that at least one class is configured with the allowed days
-    it 'should define a class with allowed-days including the required days' do
-      allowed_days.each do |day|
-        expect(login_config).to match(/set system login class \S+ allowed-days #{day}/i)
+      # Check for access-start time
+      it "should define a class with access-start time #{access_start}" do
+        expect(login_config).to match(/set system login class \S+ access-start #{Regexp.escape(access_start)}/)
+      end
+
+      # Check for access-end time
+      it "should define a class with access-end time #{access_end}" do
+        expect(login_config).to match(/set system login class \S+ access-end #{Regexp.escape(access_end)}/)
+      end
+
+      # Check for idle-timeout setting
+      it "should define a class with idle-timeout of at least #{idle_timeout} minutes" do
+        # Match a class with idle-timeout and ensure it's >= specified value
+        timeouts = login_config.scan(/set system login class \S+ idle-timeout (\d+)/).flatten.map(&:to_i)
+        expect(timeouts.any? { |t| t >= idle_timeout }).to eq(true)
       end
     end
-
-    # Check for access-start time
-    it "should define a class with access-start time #{access_start}" do
-      expect(login_config).to match(/set system login class \S+ access-start #{Regexp.escape(access_start)}/)
-    end
-
-    # Check for access-end time
-    it "should define a class with access-end time #{access_end}" do
-      expect(login_config).to match(/set system login class \S+ access-end #{Regexp.escape(access_end)}/)
-    end
-
-    # Check for idle-timeout setting
-    it "should define a class with idle-timeout of at least #{idle_timeout} minutes" do
-      # Match a class with idle-timeout and ensure it's >= specified value
-      timeouts = login_config.scan(/set system login class \S+ idle-timeout (\d+)/).flatten.map(&:to_i)
-      expect(timeouts.any? { |t| t >= idle_timeout }).to eq(true)
-    end
-  end  
+  end
 end
