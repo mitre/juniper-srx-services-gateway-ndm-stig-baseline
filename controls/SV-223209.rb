@@ -49,26 +49,27 @@ delete set system services ssh protocol-version v1'
   services_output = command('show configuration system services | display set').stdout
 
   describe 'Insecure remote management protocols' do
-    it 'should not include telnet' do
+    it 'should not include: telnet' do
       expect(services_output).not_to match(/^set system services telnet/)
     end
 
-    it 'should not include ftp' do
+    it 'should not include: ftp' do
       expect(services_output).not_to match(/^set system services ftp/)
     end
 
-    it 'should not include web-management http' do
+    it 'should not include: web-management http' do
       expect(services_output).not_to match(/^set system services web-management http\b/)
     end
   end
 
   describe 'Secure protocols should be present' do
-    it 'should include ssh' do
+    it 'should include: ssh' do
       expect(services_output).to match(/^set system services ssh/)
     end
 
-    it 'should include web-management https' do
-      expect(services_output).to match(/^set system services web-management https\b/)
-    end
+    # Uncomment if J-Web HTTPS is acceptable
+    # it 'should include web-management https' do
+    #   expect(services_output).to match(/^set system services web-management https\b/)
+    # end
   end  
 end
