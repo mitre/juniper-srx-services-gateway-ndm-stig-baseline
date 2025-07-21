@@ -28,8 +28,8 @@ set system services ssh client-alive-interval <organization-defined value>'
   tag nist: ['SC-10']
 
   # Define your organization-specific values here
-  org_keepalive_interval = input('keepalive_interval', value: 30)
-  org_keepalive_count    = input('keepalive_count', value: 3)
+  org_keepalive_interval = input('keepalive_interval')
+  org_keepalive_count    = input('keepalive_count')
 
   # Get SSH keepalive-interval config line
   keepalive_interval_config = command('show configuration system services ssh | display set | match client-alive-interval').stdout.strip
@@ -43,7 +43,6 @@ set system services ssh client-alive-interval <organization-defined value>'
     end
 
     it "should match the organization-defined interval: #{org_keepalive_interval}" do
-      #expect(keepalive_interval_config).to match(/keepalive-interval #{org_keepalive_interval}$/)
       expect(keepalive_interval_config).to match(/client-alive-interval #{org_keepalive_interval}$/)
     end
   end
@@ -54,7 +53,6 @@ set system services ssh client-alive-interval <organization-defined value>'
     end
 
     it "should match the organization-defined count max: #{org_keepalive_count}" do
-      #expect(keepalive_count_config).to match(/keepalive-count #{org_keepalive_count}$/)
       expect(keepalive_count_config).to match(/client-alive-count-max #{org_keepalive_count}$/)
     end
   end  

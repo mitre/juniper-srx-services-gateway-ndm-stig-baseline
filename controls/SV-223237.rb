@@ -27,6 +27,8 @@ delete system services web-management'
   tag nist: ['CM-7 b']
 
   describe command('show configuration system services web-management | display set') do
-    its('stdout.strip') { should be_empty }
+    it 'should not have J-Web enabled' do
+      expect(subject.stdout.strip).to eq ''
+    end
   end
 end
