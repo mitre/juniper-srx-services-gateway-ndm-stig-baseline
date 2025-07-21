@@ -53,7 +53,7 @@ set system syslog console any any'
     end
 
     it 'should log user authorization events' do
-      expect(stdout).to match(/set system syslog .* authorization info/)
+      expect(stdout).to match(/set system syslog .* authorization (info|any)/)
     end
 
     it 'should have global logging enabled' do

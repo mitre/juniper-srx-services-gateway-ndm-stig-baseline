@@ -171,6 +171,12 @@ inputs:
     type: string
     value: 'any'
 
+  # SV-229019
+  - name: changelog_minimum_severity
+    description: 'Minimum severity for change-log events. Set to either "info" or "any".'
+    type: string
+    value: 'info' 
+
   # SV-229021
   - name: authorized_audit_admins
     description: 'List of authorized user accounts or classes (roles) permitted to modify audit config'

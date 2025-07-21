@@ -38,7 +38,7 @@ set system syslog user * daemon critical"
 
   # Check if system console logging includes critical alerts or higher
   describe command('show configuration system syslog console | display set') do
-    its('stdout') { should match(/set system syslog console any critical/) }
+    its('stdout') { should match(/set system syslog console any (any|info|critical)/) }
   end
 
   # Check if system console logging includes log processing failure messages

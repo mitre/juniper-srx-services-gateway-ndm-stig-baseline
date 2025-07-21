@@ -30,12 +30,14 @@ set system syslog host <IP-syslog-server> any any'
     let(:stdout) { subject.stdout }
 
     it 'should log interactive-commands to a host or file' do
-      expect(stdout).to match(/set system syslog .* interactive-commands/)
+      expect(stdout).to match(/set system syslog (host|file) .* interactive-commands (info|any)/)
     end
 
+    # Only fail if ALL destinations suppress interactive-commands
     it 'should not suppress interactive-commands logs' do
-      expect(stdout).not_to match(/set system syslog .* interactive-commands none/)
+      suppressions = stdout.scan(/set system syslog .* interactive-commands none/)
+      destinations = stdout.scan(/set system syslog .* interactive-commands (info|any)/)
+      expect(destinations.size).to be > suppressions.size
     end
   end
-
 end

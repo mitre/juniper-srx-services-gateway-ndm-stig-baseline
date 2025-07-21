@@ -28,7 +28,7 @@ set system syslog users * change-log <info | any>"
   tag cci: ['CCI-000366', 'CCI-001328']
   tag nist: ['CM-6 b', 'SI-13 (4) (b)']
 
-  syslog_minimum_severity = input('changelog_minimum_severity')
+  syslog_minimum_severity = input('changelog_minimum_severity', value: 'info')
 
   describe command('show configuration system syslog | display set') do
     let(:syslog_config) { subject.stdout }
