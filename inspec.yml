@@ -89,13 +89,27 @@ inputs:
 
   # SV-223232
   - name: keepalive_count
-    description: 'Maximum number of client-alive probes the client will tolerate before it disconnects the SSH session'
+    description: 'Maximum number of client-alive probes the client will tolerate (unanswered) before it disconnects the SSH session'
     type: Numeric
+    value: 3
 
   # SV-223232
   - name: keepalive_interval
-    description: 'Internal in seconds between client-alive probes sent to the SSH client.'
+    description: 'Internal time (in seconds) between each client-alive probes sent to the SSH client.'
     type: Numeric
+    value: 30
+
+  # SV-223233
+  - name: 'icmpv4_rate_limit'
+    description: 'Organization-defined ICMPv4 packet rate limit'
+    type: Numeric
+    value: 50 
+
+  # SV-223233
+  - name: 'icmpv6_rate_limit'
+    description: 'Organization-defined ICMPv6 packet rate limit'
+    type: Numeric
+    value: 50
 
   # SV-223234
   - name: ssh_rate_limit

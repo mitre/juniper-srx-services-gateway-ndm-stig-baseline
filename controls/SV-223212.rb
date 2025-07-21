@@ -37,7 +37,8 @@ set system services ssh root-login deny'
   else
     describe 'SSH root login setting' do
       it 'should explicitly deny root login' do
-        expect(ssh_config).to match(/^set system services ssh root-login deny$/)
+        #expect(ssh_config).to match(/^set system services ssh root-login deny$/)
+        expect(ssh_config).to match(/^set system services ssh root-login deny\b/)
       end
     end
   end

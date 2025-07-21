@@ -26,7 +26,15 @@ set system login password change-type character-sets'
   tag cci: ['CCI-004066', 'CCI-000192']
   tag nist: ['IA-5 (1) (h)', 'IA-5 (1) (a)']
 
-  describe command('show configuration system login password | display set | match character-sets') do
-    its('stdout.strip') { should match(/^set system login password change-type character-sets/) }
+  # This control ensures the Juniper SRX enforces password complexity using at least 3 of 4 character sets
+  # Run the command to display password complexity configuration
+  output = command('show configuration system login password | display set | match character-sets').stdout.strip
+
+  # Check if the output contains the expected configuration for password complexity
+  describe 'Password complexity enforcement (change-type)' do
+    it 'should enforce character-sets complexity' do
+      expect(output).to match(/^set system login password change-type character-sets/), 
+        'Expected password complexity to use change-type character-sets, but it was not configured.'
+    end
   end
 end
