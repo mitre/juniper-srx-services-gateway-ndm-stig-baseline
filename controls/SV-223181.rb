@@ -59,9 +59,6 @@ set host <syslog server address> change-log <info | any>'
       expect(syslog_config).to match(/set system syslog (file|host) .+ any .+/)
     end
 
-    # it "should log to the specified external syslog server #{external_syslog}" do
-    #   expect(syslog_config).to match(/set system syslog host #{Regexp.escape(external_syslog)} .+ any .+/)
-    # end
     if external_syslog && !external_syslog.to_s.strip.empty?
       it "should log to the specified external syslog server #{external_syslog}" do
         expect(syslog_config).to match(/set system syslog host #{Regexp.escape(external_syslog)} .+ any .+/)

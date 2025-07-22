@@ -34,8 +34,10 @@ If the Junos version installed is not 12.1 X46 or later, this is a finding.'
       expect(match).not_to be_nil
     end
   end
-
   
+  # If the match is found, extract the version string
+  # and compare it with the minimum required version
+  current_version_str = nil  
   if match
     current_version_str = match[1]
 

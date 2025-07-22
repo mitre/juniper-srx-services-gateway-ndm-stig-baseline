@@ -40,7 +40,7 @@ set chassis cluster redundancy-group 1 interface-monitor ge-6/0/2 weight 255'
   tag nist: ['SC-5 a']
 
   # Input flag: does the organization require redundancy?
-  redundancy_required = input('redundancy_required', value: true, description: 'Whether service redundancy is required by organizational policy')
+  redundancy_required = input('redundancy_required')
 
   if !redundancy_required
     impact 0.0

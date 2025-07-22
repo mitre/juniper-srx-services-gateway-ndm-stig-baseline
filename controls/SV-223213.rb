@@ -33,21 +33,6 @@ set system login class <class name> deny-commands "(start shell)"'
     [match[1], match[2]] if match
   end.compact.to_h
 
-  # Find users assigned to the 'super-user' class
-  # super_users = user_class_map.select { |_, klass| klass == 'super-user' }.keys
-
-  # describe 'Super-user accounts presence' do
-  #   it 'should include at least one user assigned to the super-user class' do
-  #     expect(super_users.empty?).to be false
-  #   end
-  # end
-
-  # describe 'Super-user accounts' do
-  #   it 'should only include root' do
-  #     expect(super_users).to eq(['root'])
-  #   end
-  # end
-
   # Identify login classes assigned to non-root users
   non_root_classes = user_class_map.reject { |user, _| user == 'root' }.values.uniq
 

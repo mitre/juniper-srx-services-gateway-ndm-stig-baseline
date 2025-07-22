@@ -29,7 +29,6 @@ Note: Juniper Networks recommends a best practice of 4 for the rate limit; howev
   tag cci: ['CCI-002385']
   tag nist: ['SC-5 a']
 
-
   # Use input with a fallback to 4 if not defined
   ssh_rate_limit = input('ssh_rate_limit', value: 4)
 

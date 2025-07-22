@@ -25,7 +25,7 @@ set system max-configuration-rollbacks <organization-defined number>'
   tag nist: ['CM-6 b']
 
   # Load the minimum required rollback count from InSpec inputs
-  min_rollbacks = input('min_rollback_configs', value: 5)
+  min_rollbacks = input('min_rollback_configs')
 
   # Run the command to get the rollback configuration
   cmd = command('show configuration system max-configuration-rollbacks')

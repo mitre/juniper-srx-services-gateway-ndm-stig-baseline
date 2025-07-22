@@ -73,7 +73,7 @@ set system login user ids-officer class ids-admin'
   tag nist: ['CM-6 b', 'AC-2 (1)', 'AC-2 (4)']
 
   # List of authorized user accounts or classes (roles) permitted to modify audit config
-  authorized_admins = input('authorized_audit_admins', value: ['aaron.lippold','george.dias','sean.cai'])
+  authorized_admins = input('authorized_audit_admins')
 
   # Retrieve the full list of configured users and their permissions
   cmd = command('show configuration system login | display set')

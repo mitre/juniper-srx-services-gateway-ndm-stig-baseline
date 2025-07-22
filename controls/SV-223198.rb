@@ -28,8 +28,8 @@ set file <log filename> any any archive size <file size> file <number of archive
   tag cci: ['CCI-001849']
   tag nist: ['AU-4']
 
-  expected_size = input('expected_syslog_file_size', value: '10m')
-  expected_files = input('expected_syslog_file_rotation', value: '3')
+  expected_size = input('expected_syslog_file_size')
+  expected_files = input('expected_syslog_file_rotation')
 
   # Check messages file size limit and rotation count
   describe 'Local syslog file messages configuration' do

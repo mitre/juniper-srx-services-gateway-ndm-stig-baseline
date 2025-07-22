@@ -39,7 +39,7 @@ Note: DOD policy is that redundant AAA servers are required to mitigate the risk
 
 
   # Input for expected external syslog host
-  aaa_servers_configured = input('aaa_servers_configured', value: true)
+  aaa_servers_configured = input('aaa_servers_configured')
 
    # If we have AAA servers configured, we can check the authentication order and user template
   if aaa_servers_configured && !aaa_servers_configured.empty?

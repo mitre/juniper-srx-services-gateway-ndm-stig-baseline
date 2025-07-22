@@ -59,13 +59,13 @@ set snmp view all oid snmpMIBObjects include'
   snmp_config = command('show configuration snmp | display set').stdout
 
   if snmp_config.strip.empty?
-    # ✅ SNMP is not enabled — this is NOT a finding
+    # SNMP is not enabled — this is NOT a finding
     impact 0.0
     describe 'SNMP configuration' do
       skip 'SNMP is not configured on the device. Skipping SNMPv3 security checks — this is not a finding.'
     end
   else
-    # ✅ SNMP is enabled — continue checking for secure SNMPv3 usage
+    # SNMP is enabled — continue checking for secure SNMPv3 usage
 
     describe 'SNMPv1/v2c is disabled' do
       it 'should not include SNMP community strings (SNMPv1/v2c)' do

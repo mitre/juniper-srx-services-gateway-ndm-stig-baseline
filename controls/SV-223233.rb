@@ -91,20 +91,4 @@ set system internet-options no-tcp-reset drop-all-tcp'
       expect(internet_options).to include('set system internet-options no-tcp-reset drop-all-tcp')
     end
   end
-
-  # describe command('show configuration system | display set | match "(no-|internet-options)"') do
-  #   # System-level options to mitigate DoS attacks
-  #   its('stdout.strip') { should match(/^set system no-redirects/) }
-  #   its('stdout.strip') { should match(/^set system no-ping-record-route/) }
-  #   its('stdout.strip') { should match(/^set system no-ping-time-stamp/) }
-    
-  #   # Internet options limiting rates and disabling risky features
-  #   its('stdout.strip') { should match(/^set system internet-options icmpv4-rate-limit packet-rate 50/) }
-  #   its('stdout.strip') { should match(/^set system internet-options icmpv6-rate-limit packet-rate 50/) }
-  #   its('stdout.strip') { should match(/^set system internet-options no-ipip-path-mtu-discovery/) }
-  #   its('stdout.strip') { should match(/^set system internet-options no-source-quench/) }
-  #   its('stdout.strip') { should match(/^set system internet-options tcp-drop-synfin-set/) }
-  #   its('stdout.strip') { should match(/^set system internet-options no-ipv6-path-mtu-discovery/) }
-  #   its('stdout.strip') { should match(/^set system internet-options no-tcp-reset drop-all-tcp/) }
-  # end
 end

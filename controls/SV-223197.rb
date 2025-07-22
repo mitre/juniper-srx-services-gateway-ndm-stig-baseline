@@ -45,7 +45,7 @@ set system syslog console any any'
   tag nist: ['AU-3 (1)']
 
     # Input for expected external syslog host
-  expected_syslog_host = input('external_syslog_host', value: '')
+  expected_syslog_host = input('external_syslog_host')
 
   # If the expected external syslog host is provided, run the syslog-related checks
   if expected_syslog_host && !expected_syslog_host.empty?
