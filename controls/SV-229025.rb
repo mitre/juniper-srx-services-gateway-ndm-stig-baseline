@@ -42,7 +42,7 @@ Note: DOD policy is that redundant AAA servers are required to mitigate the risk
   if !use_tacacs_or_radius
     impact 0.0
     describe 'Centralized authentication check' do
-      skip 'Control not applicable because use_tacacs_or_radius input is set to false.'
+      skip 'Control not applicable because use_tacacs_or_radius (TACACS+, RADIUS) input is set to false.'
     end
   else
     describe.one do

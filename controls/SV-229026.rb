@@ -42,15 +42,24 @@ delete system authentication-order password'
   tag cci: ['CCI-000366', 'CCI-000371']
   tag nist: ['CM-6 b', 'CM-6 (1)']
 
-  describe command('show configuration system authentication-order | display set') do
-    let(:config) { subject.stdout }
+  use_tacacs_or_radius = input('use_tacacs_or_radius')
 
-    it 'should specify either TACACS+ or RADIUS as the authentication order' do
-      expect(config).to match(/set system authentication-order (tacplus|radius)/)
+  if !use_tacacs_or_radius
+    impact 0.0
+    describe 'Centralized authentication check' do
+      skip 'Control not applicable because use_tacacs_or_radius (TACACS+, RADIUS) input is set to false.'
     end
+  else
+    describe command('show configuration system authentication-order | display set') do
+      let(:config) { subject.stdout }
 
-    it 'should not include the password method in the authentication order' do
-      expect(config).not_to match(/set system authentication-order password/)
+      it 'should specify either TACACS+ or RADIUS as the authentication order' do
+        expect(config).to match(/set system authentication-order (tacplus|radius)/)
+      end
+
+      it 'should not include the password method in the authentication order' do
+        expect(config).not_to match(/set system authentication-order password/)
+      end
     end
   end
 end
