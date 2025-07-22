@@ -44,16 +44,19 @@ set system login class system-admin login-alarms'
   describe command('show configuration system login | display set') do
     let(:login_config) { subject.stdout }
 
-    # check if authorized classes can view or clear logs, doesnt check for the other config since thats not what the stig asks for
     authorized_classes.each do |cls|
-      it "should include allow-commands for log viewing in #{cls}" do
-        expect(login_config).to match(/set system login class #{cls} allow-commands.*\(show log \*\)\|\(clear log \*\)\|\(monitor log \*\)/)
+      it "#{cls} should be allowed to view logs" do
+        expect(login_config).to match(/set system login class #{cls} allow-commands "\(\s*show log \*\s*\)\|\(\s*clear log \*\s*\)\|\(\s*monitor log \*\s*\)"/)
       end
     end
 
-    it 'should not allow other classes to view or clear logs' do
-      disallowed_classes = authorized_classes.join('|')
-      expect(login_config).not_to match(/set system login class (?!#{disallowed_classes}) allow-commands .*show log/)
+    it 'should not allow unauthorized classes to use show/clear/monitor log' do
+      login_config.scan(/set system login class (\S+) allow-commands "([^"]+)"/).each do |klass, cmds|
+        next if authorized_classes.include?(klass)
+        if cmds.match?(/show log|clear log|monitor log/)
+          fail("Unauthorized class '#{klass}' has access to log commands: #{cmds}")
+        end
+      end
     end
   end
 end
