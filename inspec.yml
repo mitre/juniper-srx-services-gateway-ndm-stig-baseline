@@ -73,7 +73,7 @@ inputs:
   - name: ntp_server_address
     description: 'List of NTP servers configured, at least one is needed to pass'
     type: array
-    value: ['10.1.1.80']
+    value: []
   
   # SV-223206
   - name: aaa_servers_configured
@@ -85,7 +85,7 @@ inputs:
   - name: allowed_mgmt_zones
     description: 'List of management zones allowed to have host-inbound-traffic system-services configured'
     type: array
-    value: ['trust', 'L2-zone']
+    value: []
 
   # SV-223232
   - name: keepalive_count
