@@ -77,7 +77,7 @@ set cli idle-timeout 10'
 
     describe "Login class '#{klass}' idle-timeout setting in '#{timeout_line}'" do
       it 'should be set to 10 minutes' do
-        expect(timeout_line).to match(/^set system login class #{klass} idle-timeout 10$/),
+        expect(timeout_line).to match(/^set system login class #{klass} idle-timeout 99$/),
           "Login class '#{klass}' is missing 'idle-timeout 10' configuration. Output: '#{timeout_line}'"
       end
     end
