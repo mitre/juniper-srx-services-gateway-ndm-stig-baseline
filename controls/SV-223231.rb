@@ -71,14 +71,14 @@ set cli idle-timeout 10'
     end
   end
 
-  # Check each used class has idle-timeout set to 600
+  # Check each used class has idle-timeout set to 10 minutes
   used_classes.each do |klass|
     timeout_line = command("show configuration system login class #{klass} | display set | match idle-timeout").stdout.strip
 
     describe "Login class '#{klass}' idle-timeout setting" do
-      it 'should be set to 600 seconds' do
-        expect(timeout_line).to match(/^set system login class #{klass} idle-timeout 600$/),
-          "Login class '#{klass}' is missing 'idle-timeout 600' configuration. Output: '#{timeout_line}'"
+      it 'should be set to 10 minutes' do
+        expect(timeout_line).to match(/^set system login class #{klass} idle-timeout 10$/),
+          "Login class '#{klass}' is missing 'idle-timeout 10' configuration. Output: '#{timeout_line}'"
       end
     end
   end
