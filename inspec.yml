@@ -30,6 +30,21 @@ inspec_version: ">= 4.0"
 ###
 
 inputs:
+  # SV-223207
+  - name: no_pki_system
+    description: 'boolean confirming if the Juniper is not using PKI.'
+    type: boolean
+    value: false
+    require: true
+
+  # SV-223207
+  - name: no_pki_statement
+    description: 'statement explaining that the Juniper is not using PKI.'
+    type: string
+    value: ''
+    required: true
+    sensitive: false
+
   # SV-223181, SV-229015
   - name: external_syslog_host
     description: 'External syslog host to which the SRX will send logs'
