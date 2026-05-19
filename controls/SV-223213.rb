@@ -33,11 +33,11 @@ set system login class <class name> deny-commands "(start shell)"'
     [match[1], match[2]] if match
   end.compact.to_h
   
-  # exclude super-user class, which cannot be restricted
-  user_class_map.delete('super-user')
-
   # Identify login classes assigned to non-root users
   non_root_classes = user_class_map.reject { |user, _| user == 'root' }.values.uniq
+
+  # exclude super-user class, which cannot be restricted
+  non_root_classes.delete('super-user')
 
   # For each non-root login class, verify it denies the 'start shell' command
   describe 'Non-root login classes' do
