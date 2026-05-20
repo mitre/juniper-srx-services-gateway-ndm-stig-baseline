@@ -71,6 +71,9 @@ set cli idle-timeout 10'
     end
   end
 
+  # exclude super-user class, which cannot be restricted
+  used_classes.delete('super-user')
+
   # Check each used class has idle-timeout set to 10 minutes
   used_classes.each do |klass|
     timeout_line = command("show configuration system login class #{klass} | display set | match idle-timeout").stdout.strip
