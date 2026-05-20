@@ -32,7 +32,18 @@ Consult the Juniper knowledge base and configuration guides to determine the com
   tag cci: ['CCI-000382']
   tag nist: ['CM-7 b']
 
-  describe 'The Juniper SRX Services Gateway must be configured to prohibit the use of unnecessary and/or nonsecure functions, ports, protocols, and/or services, as defined in the PPSM CAL and vulnerability assessments.' do
-    skip 'The check for this control needs to be done manually'
+  least_functionality_manual_review_performed = input('least_functionality_manual_review_performed')
+  least_functionality_manual_review_statement = input('least_functionality_manual_review_statement')
+
+  if least_functionality_manual_review_performed
+    describe "The manual review statement: \n\"#{least_functionality_manual_review_statement}"\n" do
+      it 'should not be empty' do
+        expect(least_functionality_manual_review_statement).not_to be_empty, "Manual review statement is empty. Please provide a manual review."
+      end
+    end
+  else
+    describe 'The Juniper SRX Services Gateway must be configured to prohibit the use of unnecessary and/or nonsecure functions, ports, protocols, and/or services, as defined in the PPSM CAL and vulnerability assessments.' do
+      skip 'The check for this control needs to be done manually'
+    end
   end
 end
