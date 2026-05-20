@@ -36,7 +36,7 @@ Consult the Juniper knowledge base and configuration guides to determine the com
   least_functionality_manual_review_statement = input('least_functionality_manual_review_statement')
 
   if least_functionality_manual_review_performed
-    describe "The manual review statement: \n#{least_functionality_manual_review_statement}" do
+    describe "The manual review statement: \n\"#{least_functionality_manual_review_statement}\"\n" do
       it 'should not be empty' do
         expect(least_functionality_manual_review_statement).not_to be_empty, "Manual review statement is empty. Please provide a manual review."
       end
