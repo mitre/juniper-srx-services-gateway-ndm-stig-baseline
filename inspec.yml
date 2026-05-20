@@ -44,7 +44,22 @@ inputs:
     value: ''
     required: true
     sensitive: false
+    
+   # SV-223208
+  - name: least_functionality_manual_review_performed
+    description: 'boolean confirming if a manual review confirms disabling or removing unnecessary network services and functions that are not used as part of its role in the architecture.'
+    type: boolean
+    value: false
+    require: true
 
+  # SV-223208
+  - name: least_functionality_manual_review_statement
+    description: 'statement of manual review confirming disabling or removing unnecessary network services and functions that are not used as part of its role in the architecture.'
+    type: string
+    value: ''
+    required: true
+    sensitive: false
+    
   # SV-223181, SV-229015
   - name: external_syslog_host
     description: 'External syslog host to which the SRX will send logs'
