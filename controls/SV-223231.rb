@@ -77,7 +77,7 @@ set cli idle-timeout 10'
   # Check each used class has idle-timeout set to 10 minutes
   used_classes.each do |klass|
 
-    if klass = 'super-user'
+    if klass == 'super-user'
       describe "Login class '#{klass}' cannot be restricted, hence this is not applicable" do
         skip "Login class '#{klass}' cannot be restricted, hence this is not applicable"
       end
