@@ -60,7 +60,7 @@ set cli idle-timeout 10'
     class_line = lines.find { |l| l.include?('class ') }
 
     describe "User #{user}" do
-      it 'should have a login class assigned' do
+      it "should have a login class assigned, got: #{class_line}" do
         expect(class_line).not_to be_nil, "User '#{user}' is missing a login class assignment."
       end
     end
@@ -72,17 +72,23 @@ set cli idle-timeout 10'
   end
 
   # exclude super-user class, which cannot be restricted
-  used_classes.delete('super-user')
+ # used_classes.delete('super-user')
 
   # Check each used class has idle-timeout set to 10 minutes
   used_classes.each do |klass|
-    timeout_line = command("show configuration system login class #{klass} | display set | match idle-timeout").stdout.strip
 
-    describe "Login class '#{klass}' idle-timeout setting in '#{timeout_line}'" do
-      it 'should be set to 10 minutes' do
-        expect(timeout_line).to match(/^set system login class #{klass} idle-timeout 10$/),
-          "Login class '#{klass}' is missing 'idle-timeout 10' configuration. Output: '#{timeout_line}'"
+    if klass = 'super-user'
+      describe "Login class '#{klass}' cannot be restricted, hence this is not applicable" do
+        skip "Login class '#{klass}' cannot be restricted, hence this is not applicable"
       end
-    end
+    else
+      timeout_line = command("show configuration system login class #{klass} | display set | match idle-timeout").stdout.strip
+  
+      describe "Login class '#{klass}' idle-timeout setting in '#{timeout_line}'" do
+        it 'should be set to 10 minutes' do
+          expect(timeout_line).to match(/^set system login class #{klass} idle-timeout 10$/),
+            "Login class '#{klass}' is missing 'idle-timeout 10' configuration. Output: '#{timeout_line}'"
+        end
+      end
   end
 end
