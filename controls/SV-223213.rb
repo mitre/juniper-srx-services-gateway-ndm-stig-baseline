@@ -42,8 +42,8 @@ set system login class <class name> deny-commands "(start shell)"'
   # For each non-root login class, verify it denies the 'start shell' command
   describe 'Non-root login classes' do
     if non_root_classes.empty?
-      describe "Identified login classes assigned to non-root users: \n#{non_root_classes}" do
-        it 'should be empty' do
+      describe "listed here: \n#{non_root_classes}" do
+        it 'should be empty \n' do
           expect(non_root_classes).to be_empty, "List of login classes assigned to non-root users is not empty."
         end
       end
