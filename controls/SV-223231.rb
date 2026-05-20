@@ -90,5 +90,6 @@ set cli idle-timeout 10'
             "Login class '#{klass}' is missing 'idle-timeout 10' configuration. Output: '#{timeout_line}'"
         end
       end
+    end
   end
 end
